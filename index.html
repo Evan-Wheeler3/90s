@@ -1,0 +1,2933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Night Shift">
+<meta name="application-name" content="NIGHT SHIFT.EXE">
+<meta name="theme-color" content="#1B1915">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="NIGHT SHIFT.EXE - a 1996 office-computer puzzle game. Close tickets, catch the hacker.">
+<title>NIGHT SHIFT.EXE</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%231B1915'/%3E%3Crect x='3' y='5' width='4' height='4' fill='%23EDE6D3'/%3E%3Crect x='9' y='5' width='4' height='4' fill='%23EDE6D3'/%3E%3Crect x='4' y='6' width='2' height='2' fill='%23E39B2D'/%3E%3Crect x='10' y='6' width='2' height='2' fill='%23E39B2D'/%3E%3Crect x='7' y='9' width='2' height='2' fill='%23E39B2D'/%3E%3C/svg%3E">
+<style>
+/* =====================================================================
+   NIGHT SHIFT.EXE  -  STYLES
+   Palette: cream #EDE6D3 / warm beige / near-black, amber accent (sparingly)
+   ===================================================================== */
+*{box-sizing:border-box}
+:root{
+  --cream:#EDE6D3; --paper:#FBF7EC; --beige:#D9CEB2; --beige-d:#A89B7C; --mid:#6E6553;
+  --ink:#1B1915; --ink2:#34302A; --amber:#E39B2D;
+  --font:"Px437 IBM VGA 8x16","Perfect DOS VGA 437","Fixedsys Excelsior","Fixedsys","Monaco","Menlo","Lucida Console","Consolas","Courier New",monospace;
+  --hand:"Comic Sans MS","Marker Felt","Chalkboard SE","Bradley Hand",cursive;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+  --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
+}
+html,body{margin:0;padding:0;height:100%;background:var(--ink);overscroll-behavior:none}
+body{position:fixed;inset:0;overflow:hidden;font:15px/1.35 var(--font);color:var(--ink);
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
+  -webkit-font-smoothing:none;-moz-osx-font-smoothing:unset}
+body.busy,body.busy *{cursor:wait!important}
+button{font:inherit;color:inherit;-webkit-appearance:none;appearance:none;border-radius:0;touch-action:manipulation}
+input{font-family:inherit;font-size:16px;border-radius:0}
+b,strong{font-weight:bold}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- App shell ---------- */
+#app{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;background-color:var(--beige);border-radius:10px}
+#screen{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding:calc(var(--st) + 10px) calc(var(--sr) + 10px) 18px calc(var(--sl) + 10px);position:relative}
+.wrap{max-width:540px;margin:0 auto;position:relative}
+
+/* ---------- Wallpapers (all within palette) ---------- */
+.wp-dither{background-color:#D9CEB2;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='1' height='1' fill='%23A89B7C'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23A89B7C'/%3E%3C/svg%3E");background-size:4px 4px}
+.wp-weave{background-color:#EDE6D3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h4v4H0zM4 4h1v1H4zM5 5h1v1H5zM6 6h1v1H6zM4 3h1v1H4zM3 4h1v1H3z' fill='%23A89B7C'/%3E%3C/svg%3E");background-size:12px 12px}
+.wp-bricks{background-color:#D9CEB2;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h16v1H0zM0 4h16v1H0zM4 1h1v3H4zM12 5h1v3h-1z' fill='%23A89B7C'/%3E%3Cpath d='M0 1h4v1H0zM5 1h7v1H5zM13 5h3v1h-3zM0 5h12v1H0z' fill='%23EDE6D3'/%3E%3C/svg%3E");background-size:32px 16px}
+.wp-circuit{background-color:#1B1915;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'%3E%3Cpath d='M2 2h6v1H2zM8 2h1v6H8zM8 8h6v1H8zM3 10h1v5H3zM12 1h2v2h-2zM2 12h3v1H2z' fill='%2334302A'/%3E%3Cpath d='M7 1h3v3H7zM13 7h2v3h-2zM2 9h3v3H2z' fill='%23E39B2D'/%3E%3C/svg%3E");background-size:48px 48px}
+.wp-root{background-color:#1B1915;background-image:repeating-linear-gradient(to bottom,rgba(227,155,45,.10) 0 1px,transparent 1px 4px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Crect x='3' y='3' width='1' height='1' fill='%23E39B2D'/%3E%3C/svg%3E");background-size:auto,16px 16px}
+.wp-circuit .dicon span,.wp-root .dicon span{background:var(--ink);color:var(--cream);border-color:var(--amber)}
+.wp-circuit .dicon svg,.wp-root .dicon svg{filter:drop-shadow(0 0 0 var(--cream))}
+
+/* ---------- CRT overlays ---------- */
+#crt{position:fixed;inset:0;pointer-events:none;z-index:950;
+  background:repeating-linear-gradient(to bottom,rgba(27,25,21,.075) 0,rgba(27,25,21,.075) 1px,transparent 1px,transparent 3px)}
+#vignette{position:fixed;inset:0;pointer-events:none;z-index:951;border-radius:12px;
+  background:radial-gradient(ellipse 125% 105% at 50% 50%,transparent 60%,rgba(27,25,21,.30) 100%);
+  box-shadow:inset 0 0 36px rgba(27,25,21,.28)}
+body.no-crt #crt,body.no-crt #vignette{display:none}
+
+/* ---------- Taskbar ---------- */
+#taskbar{flex:none;display:flex;align-items:center;gap:6px;position:relative;z-index:30;
+  min-height:calc(50px + var(--sb));padding:4px calc(var(--sr) + 6px) calc(var(--sb) + 4px) calc(var(--sl) + 6px);
+  background:var(--beige);border-top:2px solid var(--ink);box-shadow:inset 0 2px 0 var(--paper)}
+#tb-start{display:flex;align-items:center;gap:6px;font-weight:bold;padding:0 10px}
+#tb-start svg{width:20px;height:20px}
+#tb-title{flex:1;min-width:0;height:40px;line-height:38px;padding:0 8px;font-size:13px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  border:1px solid var(--beige-d);box-shadow:inset 1px 1px 0 var(--beige-d),inset -1px -1px 0 var(--paper)}
+.tray{display:flex;align-items:center;height:40px;padding:0 2px 0 0;border:1px solid var(--beige-d);
+  box-shadow:inset 1px 1px 0 var(--beige-d),inset -1px -1px 0 var(--paper)}
+.tray .icon-btn{width:44px;height:38px;border:0;background:none;display:flex;align-items:center;justify-content:center;padding:0}
+.tray .icon-btn svg{width:20px;height:20px}
+.tray .icon-btn:active{background:var(--beige-d)}
+#tb-floppy{width:18px;height:18px;opacity:0;transition:opacity .15s;flex:none}
+#tb-floppy.on{opacity:1}
+#tb-floppy svg{width:18px;height:18px}
+#tb-clock{font-size:13px;min-width:66px;text-align:center;padding:0 4px;white-space:nowrap}
+#startmenu{position:fixed;left:calc(var(--sl) + 6px);bottom:calc(54px + var(--sb));z-index:560;width:230px;
+  background:var(--cream);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);display:flex}
+#startmenu .side{width:28px;background:var(--ink);color:var(--cream);writing-mode:vertical-rl;transform:rotate(180deg);
+  font-weight:bold;letter-spacing:2px;padding:8px 0;text-align:left;font-size:13px}
+#startmenu .side em{color:var(--amber);font-style:normal}
+#startmenu ul{list-style:none;margin:0;padding:4px 0;flex:1}
+#startmenu li button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:4px 10px;border:0;background:none;text-align:left}
+#startmenu li button svg{width:22px;height:22px;flex:none}
+#startmenu li button:active{background:var(--ink);color:var(--cream)}
+#startmenu hr{border:0;border-top:1px solid var(--beige-d);margin:2px 6px}
+.menu-scrim{position:fixed;inset:0;z-index:550}
+
+/* ---------- Windows ---------- */
+.win{background:var(--cream);border:2px solid var(--ink);box-shadow:4px 4px 0 rgba(27,25,21,.9);margin:0 0 14px;position:relative}
+.titlebar{display:flex;align-items:center;gap:6px;height:30px;padding:0 5px;border-bottom:2px solid var(--ink);background:var(--cream)}
+.titlebar .stripes{flex:1;align-self:stretch;margin:6px 0;min-width:8px;
+  background:repeating-linear-gradient(to bottom,var(--ink) 0,var(--ink) 1px,transparent 1px,transparent 3px)}
+.titlebar .ttl{font-weight:bold;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72%;padding:0 4px}
+.win.plain .stripes{background:none}
+.wbox{position:relative;width:18px;height:18px;flex:none;border:2px solid var(--ink);background:var(--cream);padding:0}
+.wbox::after{content:"";position:absolute;inset:-13px}
+.wbox.min::before{content:"";position:absolute;left:3px;right:3px;bottom:3px;height:2px;background:var(--ink)}
+.wbox.close::before{content:"";position:absolute;inset:3px;border:1px solid var(--ink)}
+.wbox:active{background:var(--ink)}
+.wbox.dead{opacity:.55}
+.win-body{padding:12px}
+.win-body.tight{padding:8px}
+.win-body p{margin:0 0 10px}
+.win-body p:last-child{margin-bottom:0}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;padding:6px 14px;
+  background:var(--beige);color:var(--ink);border:2px solid var(--ink);cursor:pointer;text-align:center;line-height:1.15;
+  box-shadow:inset 2px 2px 0 var(--paper),inset -2px -2px 0 var(--beige-d);touch-action:manipulation}
+.btn:active,.btn.pressed{box-shadow:inset 2px 2px 0 var(--beige-d),inset -1px -1px 0 var(--paper);transform:translate(1px,1px)}
+.btn.primary{background:var(--ink);color:var(--cream);box-shadow:inset 2px 2px 0 #4A453B,inset -2px -2px 0 #000}
+.btn.primary:active{box-shadow:inset 2px 2px 0 #000;color:var(--amber)}
+.btn:disabled,.btn.disabled{color:var(--mid);background:var(--cream);box-shadow:none;border-style:dashed;cursor:default;transform:none}
+.btn.small{min-height:44px;padding:4px 10px;font-size:13px}
+.btn.wide{width:100%}
+.btn svg{width:20px;height:20px;flex:none}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row.end{justify-content:flex-end}
+.row > .grow{flex:1}
+.center{text-align:center}
+.muted{color:var(--mid)}
+.small{font-size:13px}
+.tiny{font-size:11px}
+.hr{border:0;border-top:2px dotted var(--ink);margin:10px 0}
+.kbd{display:inline-block;border:1px solid var(--ink);padding:0 4px;background:var(--paper)}
+.inset{background:var(--paper);border:2px solid var(--ink);box-shadow:inset 2px 2px 0 var(--beige)}
+.badge{display:inline-block;min-width:20px;height:20px;line-height:16px;border:2px solid var(--ink);background:var(--amber);color:var(--ink);font-size:12px;font-weight:bold;text-align:center;padding:0 3px}
+.ico{display:inline-flex;width:24px;height:24px;flex:none}
+.ico svg{width:100%;height:100%}
+
+/* ---------- Modals / popups ---------- */
+#modals{position:fixed;inset:0;z-index:500;pointer-events:none}
+.modal-layer{position:absolute;inset:0;pointer-events:auto;display:flex;align-items:center;justify-content:center;
+  padding:calc(var(--st) + 14px) calc(var(--sr) + 12px) calc(var(--sb) + 14px) calc(var(--sl) + 12px);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='%231B1915' fill-opacity='.45'/%3E%3C/svg%3E")}
+.modal-layer > .win{width:100%;max-width:460px;max-height:100%;display:flex;flex-direction:column;margin:0;animation:pop .16s steps(3) both}
+.modal-layer > .win > .win-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1;min-height:0}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding:10px 12px 12px;border-top:1px solid var(--beige-d)}
+.modal-actions .btn{min-width:88px}
+.err-row{display:flex;gap:12px;align-items:flex-start}
+.err-row .ico{width:40px;height:40px}
+.err-row .msg{white-space:pre-wrap;flex:1}
+@keyframes pop{from{transform:scale(.88);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- Toasts ---------- */
+#toasts{position:fixed;left:0;right:0;top:calc(var(--st) + 8px);z-index:700;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;padding:0 10px}
+.toast{pointer-events:auto;background:var(--paper);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);padding:8px 12px;display:flex;gap:10px;align-items:center;max-width:440px;font-size:14px;animation:toastIn .18s steps(3) both}
+.toast.out{animation:toastOut .2s steps(3) both}
+.toast .ico{width:22px;height:22px}
+.toast.dark{background:var(--ink);color:var(--cream)}
+@keyframes toastIn{from{transform:translateY(-20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes toastOut{to{transform:translateY(-20px);opacity:0}}
+
+/* ---------- Effects ---------- */
+@keyframes shake{0%,100%{transform:none}15%{transform:translate(-7px,2px)}30%{transform:translate(6px,-2px)}45%{transform:translate(-5px,1px)}60%{transform:translate(4px,-1px)}80%{transform:translate(-2px,0)}}
+#app.shake{animation:shake .34s linear}
+#app.flash{outline:4px solid var(--amber);outline-offset:-4px}
+.stamp{position:absolute;left:50%;top:42%;z-index:40;pointer-events:none;white-space:nowrap;text-align:center;
+  transform:translate(-50%,-50%) rotate(-11deg);background:var(--amber);color:var(--ink);border:4px double var(--ink);
+  font-size:28px;font-weight:bold;letter-spacing:3px;padding:6px 16px;box-shadow:3px 3px 0 var(--ink);animation:stampIn .38s cubic-bezier(.2,1.5,.4,1) both}
+.stamp small{display:block;font-size:12px;letter-spacing:1px}
+.stamp.fail{background:var(--cream)}
+@keyframes stampIn{0%{transform:translate(-50%,-50%) rotate(-11deg) scale(2.8);opacity:0}55%{opacity:1}100%{transform:translate(-50%,-50%) rotate(-11deg) scale(1);opacity:1}}
+@keyframes blink{50%{opacity:.25}}
+@keyframes flashBg{50%{background:var(--amber)}}
+.flash-bg{animation:flashBg .5s steps(1) 3}
+
+/* busy / hourglass */
+#busy{position:fixed;inset:0;z-index:650;display:flex;align-items:center;justify-content:center;background:rgba(27,25,21,.15)}
+#busy .win{min-width:240px;max-width:86vw;margin:0}
+#busy .bz{display:flex;gap:12px;align-items:center}
+#busy .ico{width:34px;height:34px;animation:hg 1s steps(1) infinite}
+@keyframes hg{0%{transform:none}50%{transform:rotate(180deg)}}
+.loadbar{height:16px;border:2px solid var(--ink);background:var(--paper);margin-top:8px;overflow:hidden}
+.loadbar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 11px);animation:load var(--d,600ms) steps(10) forwards}
+@keyframes load{to{width:100%}}
+
+/* ---------- Boot / BSOD / Saver ---------- */
+#boot{position:fixed;inset:0;z-index:900;background:var(--ink);color:var(--cream);font-size:14px;white-space:pre-wrap;
+  padding:calc(var(--st) + 18px) calc(var(--sr) + 16px) 16px calc(var(--sl) + 16px);overflow:hidden}
+#boot .amber{color:var(--amber)}
+#boot .skip{position:absolute;right:calc(var(--sr) + 14px);bottom:calc(var(--sb) + 14px);color:var(--beige-d);font-size:12px}
+.cursor-blink::after{content:"_";animation:blink 1s steps(2) infinite}
+.bsod{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:18px 14px;white-space:pre-wrap;box-shadow:4px 4px 0 rgba(27,25,21,.6);margin-bottom:14px}
+.bsod .hl{background:var(--cream);color:var(--ink);padding:0 6px}
+#saver{position:fixed;inset:0;z-index:880;background:#000;touch-action:none}
+#saver canvas{position:absolute;inset:0;width:100%;height:100%}
+#saver .static{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--amber);font-size:20px;text-align:center}
+#fxcanvas{position:fixed;inset:0;z-index:870;width:100%;height:100%;pointer-events:auto}
+
+/* ---------- Desktop ---------- */
+.desk-icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:10px 6px;margin:4px 0 14px}
+.dicon{display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:none;padding:6px 2px;min-height:86px;cursor:pointer;position:relative}
+.dicon svg{width:42px;height:42px}
+.dicon span{background:var(--paper);border:1px solid var(--ink);padding:1px 4px;font-size:12px;line-height:1.2;text-align:center;word-break:break-word}
+.dicon:active span{background:var(--ink);color:var(--paper)}
+.dicon .badge{position:absolute;top:2px;right:14px}
+.logo{text-align:center;padding:6px 0 4px}
+.logo .big{font-size:30px;font-weight:bold;letter-spacing:2px;line-height:1.05;text-shadow:3px 3px 0 var(--beige-d)}
+.logo .big em{font-style:normal;background:var(--ink);color:var(--amber);padding:0 6px;text-shadow:none}
+.logo .sub{font-size:12px;margin-top:6px;color:var(--mid)}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.statgrid div{border:1px solid var(--ink);background:var(--paper);padding:6px 8px;font-size:12px}
+.statgrid b{display:block;font-size:16px}
+
+/* ---------- HUD ---------- */
+.hud{display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:center}
+.hud .meta{font-size:12px;line-height:1.3}
+.hud .meta b{font-size:14px}
+.timer{font-size:30px;font-weight:bold;letter-spacing:2px;background:var(--ink);color:var(--cream);padding:2px 10px;min-width:104px;text-align:center;
+  border:2px solid var(--ink);box-shadow:inset 0 0 0 2px var(--ink2);font-variant-numeric:tabular-nums}
+.timer.low{color:var(--amber)}
+.timer.low.crit{animation:blink 1s steps(2) infinite}
+.timer.paused{color:var(--beige-d)}
+.hud-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;grid-column:1/-1;font-size:13px}
+.strikes{display:inline-flex;gap:3px;align-items:center}
+.strikes i{display:inline-block;width:20px;height:20px;border:2px solid var(--ink);background:var(--paper);font-style:normal;text-align:center;line-height:16px;font-weight:bold;font-size:14px}
+.strikes i.on{background:var(--ink);color:var(--amber)}
+.hud-actions{display:flex;gap:6px;grid-column:1/-1}
+.hud-actions .btn{flex:1;padding:4px 6px;font-size:13px;position:relative}
+.hud-actions .badge{position:absolute;top:-8px;right:-6px}
+.reqline{font-size:13px;padding:8px 10px;margin-bottom:10px;border-left:4px solid var(--ink);background:var(--paper)}
+.twist{display:inline-block;background:var(--ink);color:var(--amber);font-size:11px;padding:1px 6px;margin-top:4px;letter-spacing:1px}
+.hintbar{display:none;margin-top:10px;padding:8px 10px;border:2px dashed var(--ink);background:var(--paper);font-size:13px}
+.hintbar.on{display:block}
+.result .score-table{width:100%;border-collapse:collapse;font-size:14px}
+.result .score-table td{padding:3px 0;border-bottom:1px dotted var(--beige-d)}
+.result .score-table td:last-child{text-align:right}
+.result .score-table tr.tot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:bold;font-size:16px}
+.evidence{margin-top:12px;background:var(--ink);color:var(--cream);padding:10px;border:2px solid var(--ink);font-size:14px}
+.evidence .lbl{color:var(--amber);font-size:12px;letter-spacing:1px;margin-bottom:4px}
+
+/* ---------- Email ---------- */
+.mail-list{border:2px solid var(--ink);background:var(--paper)}
+.mail-item{display:flex;gap:10px;align-items:center;width:100%;min-height:54px;text-align:left;border:0;border-bottom:1px solid var(--beige-d);background:none;padding:8px 10px;cursor:pointer}
+.mail-item:last-child{border-bottom:0}
+.mail-item:active{background:var(--ink);color:var(--cream)}
+.mail-item .from{font-size:12px}
+.mail-item .subj{font-size:14px}
+.mail-item.unread .subj{font-weight:bold}
+.mail-item.unread .from::before{content:"\25CF ";color:var(--amber)}
+.mail-view{background:var(--paper);border:2px solid var(--ink);padding:10px;white-space:pre-wrap;font-size:14px}
+.mail-head{font-size:12px;border-bottom:1px dashed var(--ink);padding-bottom:6px;margin-bottom:8px;white-space:normal}
+.mail-head b{font-size:14px}
+
+/* ---------- Pay stub ---------- */
+.stub{background:var(--paper);border:2px dashed var(--ink);padding:12px;font-size:13px;position:relative}
+.stub h3{margin:0 0 2px;font-size:16px;letter-spacing:1px}
+.stub table{width:100%;border-collapse:collapse;margin-top:8px}
+.stub td{padding:4px 0;border-bottom:1px dotted var(--beige-d)}
+.stub td:last-child{text-align:right;white-space:nowrap}
+.stub tr.net td{font-weight:bold;font-size:16px;border-top:2px solid var(--ink);border-bottom:0;padding-top:6px}
+.bar{height:16px;border:2px solid var(--ink);background:var(--cream);margin:6px 0}
+.bar i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 8px)}
+
+/* ---------- Case file ---------- */
+.tabs{display:flex;gap:0;margin-bottom:-2px;position:relative;z-index:1}
+.tabs button{flex:1;min-height:44px;border:2px solid var(--ink);background:var(--beige);margin-right:-2px}
+.tabs button.on{background:var(--paper);border-bottom-color:var(--paper);font-weight:bold}
+.tabpane{border:2px solid var(--ink);background:var(--paper);padding:10px}
+.suspects{display:grid;grid-template-columns:1fr;gap:8px}
+.suspect{border:2px solid var(--ink);background:var(--cream);padding:8px;position:relative}
+.suspect .nm{font-weight:bold;font-size:15px}
+.suspect .role{font-size:12px;color:var(--mid)}
+.suspect table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.suspect td{border:1px solid var(--beige-d);padding:2px 4px}
+.suspect td:first-child{color:var(--mid);width:40%}
+.suspect.out{opacity:.5}
+.suspect.out .nm{text-decoration:line-through}
+.suspect.out::after{content:"RULED OUT";position:absolute;right:8px;top:8px;border:2px solid var(--ink);padding:0 4px;font-size:11px;transform:rotate(6deg);background:var(--paper)}
+.suspect .row{margin-top:8px}
+.suspect.pick{outline:3px solid var(--amber);outline-offset:2px}
+.clues{list-style:none;margin:0;padding:0;font-size:13px}
+.clues li{padding:6px 0;border-bottom:1px dotted var(--beige-d)}
+.clues li small{display:block;color:var(--mid);font-size:11px}
+
+/* ---------- Puzzle: PASSWORD ---------- */
+.pw-acct{font-size:13px;margin-bottom:8px}
+.pw-clues{display:flex;gap:8px;margin-bottom:10px}
+.pw-clue{flex:1;flex-direction:column;min-height:66px;font-size:12px;padding:4px;position:relative}
+.pw-clue svg{width:30px;height:30px}
+.pw-clue.seen::after{content:"\2713";position:absolute;top:2px;right:4px;font-size:12px}
+.pw-hist{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.pw-row{display:flex;align-items:center;gap:4px}
+.pw-row .n{width:22px;font-size:11px;color:var(--mid)}
+.pw-cell{width:38px;height:40px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;background:var(--paper);flex:none}
+.pw-cell.hit{background:var(--ink);color:var(--cream)}
+.pw-cell.near{background:repeating-linear-gradient(45deg,var(--beige) 0 3px,var(--paper) 3px 6px);border-style:dashed}
+.pw-cell.miss{color:var(--beige-d)}
+.pw-cell.cur{outline:2px dashed var(--ink);outline-offset:2px}
+.pw-cell.known{box-shadow:inset 0 -4px 0 var(--amber)}
+.pw-pegs{display:grid;grid-template-columns:repeat(3,13px);gap:3px;margin-left:8px}
+.peg{width:13px;height:13px;border:2px solid var(--ink);border-radius:50%;background:transparent}
+.peg.hit{background:var(--ink)}
+.peg.near{background:var(--paper)}
+.peg.none{border-color:var(--beige-d)}
+.pw-current{padding:8px;border:2px solid var(--ink);background:var(--cream);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.pw-left{margin-left:auto;font-size:12px;text-align:right}
+.keypad{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.keypad .btn{font-size:20px;padding:4px 0;min-width:0}
+.keypad .btn.wide2{grid-column:span 2;font-size:15px}
+.legend{font-size:11px;color:var(--mid);margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.legend .pw-cell{width:18px;height:18px;font-size:10px;display:inline-flex;vertical-align:middle}
+.sticky{background:#F1C978;width:220px;max-width:100%;margin:6px auto;padding:16px 14px;font:20px/1.3 var(--hand);transform:rotate(-2deg);box-shadow:3px 4px 0 rgba(27,25,21,.35);border:1px solid var(--beige-d);position:relative}
+.sticky.old{opacity:.85}
+.sticky .oldtag{position:absolute;top:-8px;right:-6px;background:var(--ink);color:var(--cream);font:bold 11px var(--font);padding:2px 5px;transform:rotate(8deg)}
+.cal{width:260px;max-width:100%;margin:0 auto;border:2px solid var(--ink);background:var(--paper)}
+.cal .mh{background:var(--ink);color:var(--cream);text-align:center;padding:4px;font-weight:bold;letter-spacing:2px}
+.cal .grid{display:grid;grid-template-columns:repeat(7,1fr);font-size:12px;text-align:center}
+.cal .grid div{padding:5px 0;border:1px solid var(--beige);position:relative}
+.cal .grid .dn{font-weight:bold;background:var(--beige)}
+.cal .circ{outline:2px solid var(--ink);outline-offset:-3px;border-radius:50%;font-weight:bold}
+.cal .xx{text-decoration:line-through;font-weight:bold}
+.cal .xx::after{content:"";position:absolute;left:20%;right:20%;top:50%;border-top:2px solid var(--ink);transform:rotate(35deg)}
+.cal .note{font:16px var(--hand);padding:6px 8px;border-top:1px dashed var(--ink)}
+.polaroid{width:220px;max-width:100%;margin:6px auto;background:var(--paper);border:1px solid var(--beige-d);padding:10px 10px 6px;box-shadow:3px 4px 0 rgba(27,25,21,.35);transform:rotate(1.5deg)}
+.polaroid svg{width:100%;height:auto;display:block;border:1px solid var(--ink);image-rendering:pixelated}
+.polaroid .cap{font:16px var(--hand);text-align:center;margin-top:6px}
+
+/* ---------- Puzzle: SORTER ---------- */
+.rules{background:var(--paper);border:2px solid var(--ink);padding:6px 8px 6px 4px;font-size:13px;margin-bottom:8px}
+.rules .rh{font-size:11px;color:var(--mid);padding-left:4px;margin-bottom:2px}
+.rules ol{margin:0;padding-left:24px}
+.rules li{padding:1px 2px}
+.rules li.flash{background:var(--amber)}
+.files{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.filecard{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:6px 10px;justify-content:flex-start;text-align:left}
+.filecard .ico{width:28px;height:28px}
+.filecard .fname{font-weight:bold;font-size:14px}
+.filecard .meta{font-size:12px;color:var(--mid)}
+.filecard.sel{background:var(--ink);color:var(--cream);box-shadow:none}
+.filecard.sel .meta{color:var(--beige)}
+.filecard.gone{animation:fileOut .26s steps(4) forwards;pointer-events:none}
+.filecard.hintme{outline:3px dashed var(--amber);outline-offset:2px}
+@keyframes fileOut{to{opacity:0;transform:translateY(30px) scale(.8)}}
+.tag-conf{font-size:10px;border:1px solid currentColor;padding:0 3px;margin-left:6px;letter-spacing:1px;vertical-align:middle}
+.folders{position:sticky;bottom:-18px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--cream);padding:8px 0 4px;border-top:2px solid var(--ink);z-index:5}
+.folder{flex-direction:column;min-height:62px;font-size:12px;padding:4px 2px;gap:2px}
+.folder .ico{width:26px;height:26px}
+.folder .cnt{font-size:11px;color:var(--mid)}
+.folder.armed{border-style:dashed}
+.folder.hot{animation:flashBg .45s steps(1) 4}
+.sort-left{font-size:12px;color:var(--mid);margin-bottom:6px}
+
+/* ---------- Puzzle: DIAL-UP ---------- */
+.modem-status{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--ink);color:var(--amber);padding:6px 10px;font-size:13px;margin-bottom:6px;min-height:34px}
+.leds{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.led{width:11px;height:11px;border:1px solid var(--amber);display:inline-block}
+.led.on{background:var(--amber)}
+.wave{display:flex;align-items:center;gap:2px;height:36px;margin-bottom:10px;background:var(--ink);padding:0 6px;border:2px solid var(--ink)}
+.wave i{flex:1;background:var(--amber);height:2px}
+.pads{display:grid;gap:8px;max-width:400px;margin:0 auto}
+.pad{aspect-ratio:1;font-size:28px;font-weight:bold;min-height:64px;flex-direction:column;gap:0}
+.pad small{font-size:10px;font-weight:normal;color:var(--mid)}
+.pad.lit{background:var(--ink);color:var(--amber);box-shadow:0 0 0 3px var(--amber)}
+.pad.lit small{color:var(--amber)}
+.pad.hintme{outline:3px dashed var(--amber);outline-offset:3px}
+.pads.locked .pad{cursor:default}
+.dial-ctl{display:flex;gap:8px;margin-top:10px}
+.dial-ctl .btn{flex:1}
+
+/* ---------- Puzzle: TERMINAL ---------- */
+.term{background:var(--ink);color:var(--amber);border:2px solid var(--ink);box-shadow:inset 0 0 0 2px var(--ink2);padding:8px;height:38vh;min-height:190px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;font-size:13px;line-height:1.35;white-space:pre-wrap;word-break:break-word}
+.term .ln{min-height:1.35em}
+.term .key{background:var(--amber);color:var(--ink);padding:0 3px}
+.term .dim{color:var(--beige-d)}
+.term .cmd{color:var(--cream)}
+.term-input{display:flex;gap:6px;margin-top:8px;align-items:stretch}
+.term-input .pr{display:flex;align-items:center;font-size:12px;max-width:40%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.term-input input{flex:1;min-width:0;height:44px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);padding:0 8px;-webkit-appearance:none;appearance:none;text-transform:uppercase;outline:none}
+.term-input input:focus{box-shadow:inset 0 0 0 2px var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{min-height:44px;padding:4px 10px;font-size:13px}
+.chip.clip{background:var(--amber)}
+.chips .lbl{width:100%;font-size:11px;color:var(--mid);margin-top:2px}
+
+/* ---------- Puzzle: FIREWALL ---------- */
+.fw-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.fw-count{font-size:13px;background:var(--ink);color:var(--amber);padding:4px 8px}
+.fw-grid{display:grid;gap:2px;background:var(--ink);border:2px solid var(--ink);margin:0 -4px;touch-action:manipulation}
+.cell{aspect-ratio:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:17px;padding:0;border:0;position:relative;
+  background:var(--beige);box-shadow:inset 2px 2px 0 var(--paper),inset -2px -2px 0 var(--beige-d);cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.cell.open{background:var(--cream);box-shadow:none;cursor:default}
+.cell.trap{background:var(--amber);box-shadow:none}
+.cell.trap::before{content:"";width:46%;height:46%;background:var(--ink);border-radius:50%;box-shadow:0 0 0 2px var(--amber),0 0 0 4px var(--ink)}
+.cell.trap.heavy::after{content:"2";position:absolute;right:2px;bottom:0;font-size:10px}
+.cell.flag::before{content:"";position:absolute;left:34%;top:20%;width:3px;height:60%;background:var(--ink)}
+.cell.flag::after{content:"";position:absolute;left:calc(34% + 3px);top:20%;border-left:13px solid var(--amber);border-top:6px solid transparent;border-bottom:6px solid transparent;filter:drop-shadow(1px 0 0 var(--ink))}
+.cell.flag2 .f2{position:absolute;right:3px;bottom:1px;font-size:10px}
+.cell.hintme{animation:flashBg .45s steps(1) 4}
+.cell.n0{color:transparent}
+.cell.n2,.cell.n3{text-decoration:underline}
+.cell.n4,.cell.n5,.cell.n6,.cell.n7,.cell.n8{background:var(--paper);text-decoration:underline double}
+.mode-btn.on{background:var(--ink);color:var(--amber)}
+
+/* ---------- Solitaire cameo ---------- */
+.sol-top{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.sol-table{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;min-height:200px}
+.sol-col{display:flex;flex-direction:column}
+.card{width:100%;aspect-ratio:5/7;background:var(--paper);border:2px solid var(--ink);border-radius:5px;position:relative;font-size:13px;font-weight:bold;padding:1px 3px;line-height:1.1;text-align:left;display:block;min-height:0;flex:none}
+.sol-col .card + .card{margin-top:-95%}
+.card.red{color:#B06A12}
+.card .s{display:block;font-size:12px}
+.card .big{position:absolute;right:3px;bottom:1px;font-size:18px}
+.card.back{background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='2' height='2' fill='%23E39B2D'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23E39B2D'/%3E%3C/svg%3E");background-size:4px 4px;box-shadow:inset 0 0 0 3px var(--ink)}
+.card.empty{background:transparent;border-style:dashed;border-color:var(--beige-d)}
+.card.can{box-shadow:0 0 0 3px var(--amber)}
+.sol-pile{width:56px}
+
+/* ---------- Coach marks ---------- */
+#coach{position:fixed;inset:0;z-index:600;pointer-events:none}
+.coach-ring{position:absolute;border:3px dashed var(--amber);box-shadow:0 0 0 9999px rgba(27,25,21,.42);transition:all .2s;border-radius:2px}
+.coach-bubble{position:absolute;left:calc(var(--sl) + 12px);right:calc(var(--sr) + 12px);max-width:440px;margin:0 auto;pointer-events:auto;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:4px 4px 0 var(--ink);padding:10px;display:flex;gap:10px;align-items:flex-start;animation:pop .16s steps(3) both}
+.coach-bubble .ico{width:36px;height:36px}
+.coach-bubble .txt{font-size:15px;margin-bottom:8px}
+.coach-bubble .row{gap:6px}
+
+/* ---------- Misc ---------- */
+.ach-list{display:flex;flex-direction:column;gap:6px}
+.ach{display:flex;gap:10px;align-items:center;border:2px solid var(--ink);background:var(--paper);padding:6px 8px}
+.ach.locked{border-style:dashed;color:var(--mid);background:var(--cream)}
+.ach.locked .ico{opacity:.35;filter:grayscale(1)}
+.ach .ico{width:30px;height:30px}
+.ach .d{font-size:12px}
+.wp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.wp-opt{min-height:90px;flex-direction:column;justify-content:flex-end;padding:4px;font-size:11px;position:relative}
+.wp-opt .sw{position:absolute;inset:4px 4px 26px;border:1px solid var(--ink)}
+.wp-opt.on{outline:3px solid var(--amber);outline-offset:1px}
+.wp-opt.lock .sw{filter:grayscale(1) opacity(.3)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dotted var(--beige-d)}
+.check{width:24px;height:24px;border:2px solid var(--ink);background:var(--paper);display:inline-flex;align-items:center;justify-content:center;font-weight:bold}
+.manual h4{margin:12px 0 4px;font-size:14px;background:var(--ink);color:var(--cream);padding:2px 6px;display:inline-block}
+.manual ul{margin:0;padding-left:18px;font-size:13px}
+.manual li{margin:2px 0}
+
+@media (orientation:landscape) and (max-height:520px){
+  .term{height:52vh}
+  .pads{max-width:300px}
+  .pad{min-height:48px;font-size:22px}
+  .logo .big{font-size:24px}
+}
+@media (min-width:600px){ .suspects{grid-template-columns:1fr 1fr} }
+
+/* Reduced motion: system setting OR in-game toggle */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}
+  .timer.low.crit{animation:none}
+}
+body.reduce *,body.reduce *::before,body.reduce *::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}
+</style>
+</head>
+<body>
+<div id="app" class="wp-dither">
+  <main id="screen" aria-live="polite"></main>
+  <nav id="taskbar" aria-label="Taskbar">
+    <button class="btn" id="tb-start" aria-haspopup="menu"></button>
+    <div id="tb-title">NIGHTSHIFT.EXE</div>
+    <div class="tray">
+      <button class="icon-btn" id="tb-mute" aria-label="Toggle sound"></button>
+      <span id="tb-floppy" aria-hidden="true"></span>
+      <span id="tb-clock">--:--</span>
+    </div>
+  </nav>
+</div>
+<div id="modals"></div>
+<div id="toasts" aria-live="assertive"></div>
+<div id="crt" aria-hidden="true"></div>
+<div id="vignette" aria-hidden="true"></div>
+<script>
+'use strict';
+/* =====================================================================
+   NIGHT SHIFT.EXE
+   Single-file architecture (modules are IIFEs, top to bottom):
+     U        - utilities: DOM builder, seeded RNG, formatting
+     Store    - localStorage persistence with in-memory fallback
+     Settings - user preferences (sound, motion, CRT, wallpaper)
+     Sound    - WebAudio synth (sfx + DTMF tones), mute aware
+     Icons    - 16x16 pixel-art icons rendered to SVG from text maps
+     FX       - toasts, shake, stamp, hourglass loader, floppy save light
+     Modal    - window-styled dialogs, System Error popups
+     Countdown- pausable ticket timer
+     Taskbar  - start menu, clock, mute toggle
+     Screen   - swaps the main view and runs cleanup
+     Ach      - achievements + wallpaper unlocks
+     Case     - procedural suspects / clues for the hacker mystery
+     Mail     - story + pressure emails
+     Puzzles  - PASSWORD, SORTER, DIALUP, TERMINAL, FIREWALL
+     Coach    - 30-second guided first ticket
+     Game     - campaign + daily challenge loop, scoring, ranks
+     Desktop  - main menu, control panel, awards, recycle bin
+     Eggs     - screensaver, Konami code, solitaire cameo
+   ===================================================================== */
+
+/* ============================== U ============================== */
+const U = (() => {
+  /** Tiny hyperscript: h('div', {class:'x', onclick:fn}, child, 'text') */
+  function h(tag, props, ...kids) {
+    const el = document.createElement(tag);
+    if (props) {
+      for (const k in props) {
+        const v = props[k];
+        if (v == null || v === false) continue;
+        if (k === 'class') el.className = v;
+        else if (k === 'text') el.textContent = v;
+        else if (k === 'html') el.innerHTML = v;
+        else if (k === 'style') el.style.cssText = v;
+        else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+        else el.setAttribute(k, v === true ? '' : v);
+      }
+    }
+    for (const c of kids.flat(3)) {
+      if (c == null || c === false) continue;
+      el.append(c.nodeType ? c : document.createTextNode(String(c)));
+    }
+    return el;
+  }
+  function hashStr(s) {
+    let h1 = 1779033703 ^ s.length;
+    for (let i = 0; i < s.length; i++) {
+      h1 = Math.imul(h1 ^ s.charCodeAt(i), 3432918353);
+      h1 = (h1 << 13) | (h1 >>> 19);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 = Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (h1 ^ (h1 >>> 16)) >>> 0;
+  }
+  /** Seeded RNG (mulberry32) with helpers. Same seed => same puzzles. */
+  function rng(seed) {
+    let a = typeof seed === 'number' ? seed >>> 0 : hashStr(String(seed));
+    const next = () => {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    const R = {
+      next,
+      int: (lo, hi) => lo + Math.floor(next() * (hi - lo + 1)),
+      pick: arr => arr[Math.floor(next() * arr.length)],
+      chance: p => next() < p,
+      shuffle(arr) {
+        const out = arr.slice();
+        for (let i = out.length - 1; i > 0; i--) {
+          const j = Math.floor(next() * (i + 1));
+          [out[i], out[j]] = [out[j], out[i]];
+        }
+        return out;
+      }
+    };
+    return R;
+  }
+  const pad2 = n => String(n).padStart(2, '0');
+  const fmtTime = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + pad2(s % 60); };
+  /** minutes-since-midnight -> "4:05 PM" */
+  const fmt12 = m => { m = ((m % 1440) + 1440) % 1440; const hh = Math.floor(m / 60), mm = m % 60; return ((hh % 12) || 12) + ':' + pad2(mm) + (hh < 12 ? ' AM' : ' PM'); };
+  const money = pts => '$' + (Math.max(0, pts) / 10).toFixed(2);
+  const roman = n => ['', 'I', 'II', 'III'][n] || String(n);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ymd = (d = new Date()) => d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  return { h, rng, hashStr, pad2, fmtTime, fmt12, money, roman, clamp, ymd, wait };
+})();
+const h = U.h;
+const $ = (s, r = document) => r.querySelector(s);
+
+/* ============================== Store ============================== */
+const Store = (() => {
+  const KEY = 'nightshift.exe.v1';
+  const DEFAULTS = () => ({
+    settings: { mute: false, reduce: false, crt: true, wallpaper: 'dither' },
+    ach: {}, walls: ['dither'], best: { campaign: 0, daily: {}, rank: 0 },
+    campaign: null, seen: {}, stats: { runs: 0, wins: 0, tickets: 0 }
+  });
+  let data = DEFAULTS();
+  let persistent = true;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        const d = DEFAULTS();
+        data = Object.assign(d, parsed);
+        data.settings = Object.assign(DEFAULTS().settings, parsed.settings || {});
+        data.best = Object.assign(DEFAULTS().best, parsed.best || {});
+        data.stats = Object.assign(DEFAULTS().stats, parsed.stats || {});
+        if (!Array.isArray(data.walls)) data.walls = ['dither'];
+      }
+    }
+  } catch (e) { persistent = false; }
+  let saveTimer = 0;
+  function flush() {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { persistent = false; }
+  }
+  /** Debounced save; shows the floppy-disk light in the tray. */
+  function save(immediate) {
+    clearTimeout(saveTimer);
+    if (immediate) flush(); else saveTimer = setTimeout(flush, 60);
+    if (window.FX) FX.floppy();
+  }
+  function reset() { data = DEFAULTS(); flush(); }
+  return { get d() { return data; }, save, flush, reset, isPersistent: () => persistent };
+})();
+
+/* ============================== Settings ============================== */
+const Settings = {
+  get: () => Store.d.settings,
+  set(k, v) { Store.d.settings[k] = v; Store.save(); Settings.apply(); },
+  reduced: () => !!Store.d.settings.reduce || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
+  apply() {
+    const s = Store.d.settings;
+    document.body.classList.toggle('reduce', !!s.reduce);
+    document.body.classList.toggle('no-crt', s.crt === false);
+    const app = $('#app');
+    app.className = app.className.replace(/\bwp-\S+/g, '').trim();
+    app.classList.add('wp-' + (Store.d.walls.includes(s.wallpaper) ? s.wallpaper : 'dither'));
+    if (window.Taskbar) Taskbar.refreshMute();
+  }
+};
+
+/* ============================== Sound ============================== */
+const Sound = (() => {
+  let ctx = null, master = null, noiseBuf = null, unlocked = false;
+  function ensure() {
+    if (ctx) { if (ctx.state === 'suspended') ctx.resume().catch(() => {}); return ctx; }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try {
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = 0.22;
+      master.connect(ctx.destination);
+    } catch (e) { ctx = null; }
+    return ctx;
+  }
+  // iOS requires audio to be started from a user gesture: prime a silent buffer once.
+  function unlock() {
+    const c = ensure();
+    if (!c || unlocked) return;
+    try {
+      const b = c.createBuffer(1, 1, 22050), s = c.createBufferSource();
+      s.buffer = b; s.connect(c.destination); s.start(0);
+      unlocked = true;
+    } catch (e) { /* ignore */ }
+  }
+  ['touchend', 'pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, { passive: true }));
+
+  const muted = () => !!Store.d.settings.mute;
+  function tone(freq, dur, o = {}) {
+    if (muted()) return;
+    const c = ensure(); if (!c || c.state !== 'running' && !unlocked) return;
+    try {
+      const t = c.currentTime + (o.when || 0);
+      const osc = c.createOscillator(), g = c.createGain();
+      osc.type = o.type || 'square';
+      osc.frequency.setValueAtTime(freq, t);
+      if (o.slide) osc.frequency.exponentialRampToValueAtTime(Math.max(30, freq + o.slide), t + dur);
+      const vol = o.vol == null ? 0.4 : o.vol;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol, t + 0.006);
+      g.gain.setValueAtTime(vol, t + Math.max(0.007, dur - 0.03));
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g); g.connect(master);
+      osc.start(t); osc.stop(t + dur + 0.03);
+    } catch (e) { /* ignore */ }
+  }
+  function noise(dur, o = {}) {
+    if (muted()) return;
+    const c = ensure(); if (!c) return;
+    try {
+      if (!noiseBuf) {
+        noiseBuf = c.createBuffer(1, c.sampleRate * 0.6, c.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      }
+      const t = c.currentTime + (o.when || 0);
+      const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+      src.buffer = noiseBuf;
+      f.type = o.lp ? 'lowpass' : 'highpass';
+      f.frequency.value = o.lp || o.hp || 1000;
+      g.gain.setValueAtTime(o.vol || 0.3, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(f); f.connect(g); g.connect(master);
+      src.start(t); src.stop(t + dur + 0.02);
+    } catch (e) { /* ignore */ }
+  }
+  // DTMF keypad frequencies (rows x cols) -> pad index 0..8 = digits 1..9
+  const ROWF = [697, 770, 852], COLF = [1209, 1336, 1477];
+  const sfx = {
+    click() { tone(1400, 0.025, { vol: 0.15 }); },
+    key() { noise(0.025, { vol: 0.18, hp: 2500 }); },
+    select() { tone(880, 0.04, { vol: 0.2, type: 'triangle' }); },
+    ok() { tone(660, 0.07, { type: 'triangle' }); tone(990, 0.11, { type: 'triangle', when: 0.07 }); },
+    err() { tone(150, 0.32, { type: 'sawtooth', vol: 0.35 }); tone(155, 0.32, { type: 'square', vol: 0.2 }); },
+    stamp() { noise(0.12, { vol: 0.7, lp: 600 }); tone(110, 0.16, { type: 'sine', vol: 0.6, slide: -50 }); },
+    mail() { tone(988, 0.09, { type: 'triangle' }); tone(1319, 0.16, { type: 'triangle', when: 0.1 }); },
+    win() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.12, { when: i * 0.09, type: 'triangle', vol: 0.35 })); },
+    lose() { [392, 330, 262, 196].forEach((f, i) => tone(f, 0.18, { when: i * 0.14, type: 'square', vol: 0.25 })); },
+    flag() { tone(520, 0.05, { vol: 0.2 }); tone(780, 0.05, { vol: 0.2, when: 0.05 }); },
+    boom() { noise(0.4, { vol: 0.6, lp: 900 }); tone(80, 0.3, { type: 'sawtooth', vol: 0.4, slide: -40 }); },
+    open() { tone(300, 0.03, { vol: 0.15, type: 'triangle' }); },
+    boot() { [262, 392, 523, 784].forEach((f, i) => tone(f, 0.25, { when: i * 0.12, type: 'triangle', vol: 0.25 })); },
+    dtmf(i, dur = 0.25) {
+      const r = Math.floor(i / 3) % 3, c = i % 3;
+      tone(ROWF[r], dur, { type: 'sine', vol: 0.3 }); tone(COLF[c], dur, { type: 'sine', vol: 0.3 });
+    },
+    modem() {
+      // the iconic handshake screech, compressed to ~1s
+      tone(1100, 0.18, { type: 'sine', vol: 0.25 });
+      tone(2100, 0.25, { type: 'sine', vol: 0.2, when: 0.18 });
+      noise(0.45, { vol: 0.25, hp: 1500, when: 0.42 });
+      tone(980, 0.3, { type: 'square', vol: 0.12, when: 0.45, slide: 900 });
+    }
+  };
+  return { sfx, tone, unlock, muted };
+})();
+
+/* ============================== Icons ============================== */
+const Icons = (() => {
+  const PAL = { k: '#1B1915', c: '#EDE6D3', w: '#FBF7EC', b: '#D9CEB2', d: '#A89B7C', a: '#E39B2D' };
+  /** Convert a 16-row text pixel map into a crisp SVG string. */
+  function px(rows) {
+    let s = '';
+    rows.forEach((r, y) => {
+      let x = 0;
+      while (x < 16) {
+        const ch = r[x] || '.';
+        let n = 1;
+        while (x + n < 16 && (r[x + n] || '.') === ch) n++;
+        if (PAL[ch]) s += `<rect x="${x}" y="${y}" width="${n}" height="1" fill="${PAL[ch]}"/>`;
+        x += n;
+      }
+    });
+    return `<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">${s}</svg>`;
+  }
+  const MAPS = {
+    computer: ['', '.kkkkkkkkkkkkkk.', '.kbbbbbbbbbbbbk.', '.kbkkkkkkkkkkbk.', '.kbkaakkkkkkkbk.', '.kbkkkkkkkkkkbk.', '.kbkaaaakkkkkbk.', '.kbkkkkkkkkkkbk.', '.kbbbbbbbbbbbbk.', '.kbbbbbbbbbdabk.', '.kkkkkkkkkkkkkk.', '......kbbk......', '...kkkkkkkkkk...', '...kbbbbbbbbk...', '...kkkkkkkkkk...'],
+    floppy: ['', '.kkkkkkkkkkkkk..', '.kbkdddddddkbkk.', '.kbkdddkkddkbbk.', '.kbkdddkkddkbbk.', '.kbkkkkkkkkkbbk.', '.kbbbbbbbbbbbbk.', '.kbkkkkkkkkkkbk.', '.kbkwwwwwwwwkbk.', '.kbkwkkkkkkwkbk.', '.kbkwwwwwwwwkbk.', '.kbkwkkkkkwwkbk.', '.kbkwwwwwwwwkbk.', '.kkkkkkkkkkkkkk.'],
+    folder: ['', '', '..kkkkk.........', '.kbbbbbk........', '.kbbbbbbkkkkkkk.', '.kwwwwwwwwwwwwk.', '.kbbbbbbbbbbbbk.', '.kbbbbbbbbbbbbk.', '.kbbbbbbbbbbbbk.', '.kbbbbbbbbbbbbk.', '.kbbbbbbbbbbbbk.', '.kddddddddddddk.', '.kkkkkkkkkkkkkk.'],
+    file: ['', '...kkkkkkkk.....', '...kwwwwwwkk....', '...kwwwwwwkwk...', '...kwwwwwwkkkk..', '...kwkkkkwwwwk..', '...kwwwwwwwwwk..', '...kwkkkkkkkwk..', '...kwwwwwwwwwk..', '...kwkkkkkkkwk..', '...kwwwwwwwwwk..', '...kwkkkkkwwwk..', '...kwwwwwwwwwk..', '...kkkkkkkkkkk..'],
+    sheet: ['', '...kkkkkkkk.....', '...kwwwwwwkk....', '...kwwwwwwkwk...', '...kkkkkkkkkkk..', '...kwkwwkwwwkk..', '...kkkkkkkkkkk..', '...kwkwwkwwwkk..', '...kkkkkkkkkkk..', '...kwkwwkwwwkk..', '...kkkkkkkkkkk..', '...kwkwwkwwwkk..', '...kkkkkkkkkkk..'],
+    tmp: ['', '...kkkkkkkk.....', '...kdddddddk....', '...kdwdwdwdkk...', '...kddddddddk...', '...kwdwdwdwdk...', '...kddddddddk...', '...kdwdwdwdwk...', '...kddddddddk...', '...kwdwdwdwdk...', '...kddddddddk...', '...kkkkkkkkkk...'],
+    exe: ['', '.kkkkkkkkkkkkkk.', '.kaaaaaaaaaakak.', '.kkkkkkkkkkkkkk.', '.kwwwwwwwwwwwwk.', '.kwkkwwwwwwwwwk.', '.kwwkkwwwwwwwwk.', '.kwwwkkwwwwwwwk.', '.kwwkkwwwwwwwwk.', '.kwkkwwkkkkkwwk.', '.kwwwwwwwwwwwwk.', '.kkkkkkkkkkkkkk.'],
+    image: ['', '.kkkkkkkkkkkkkk.', '.kwwwwwwwwwwwwk.', '.kwwwwwwwwaawwk.', '.kwwwwwwwwaawwk.', '.kwwwwkwwwwwwwk.', '.kwwwkdkwwwwwwk.', '.kwwkdddkwwkwwk.', '.kwkdddddkkdkwk.', '.kkdddddddddddk.', '.kddddddddddddk.', '.kkkkkkkkkkkkkk.'],
+    trash: ['', '......kkkk......', '..kkkkkkkkkkkk..', '..kbbbbbbbbbbk..', '..kkkkkkkkkkkk..', '...kbkbkbkbkk...', '...kbkbkbkbkk...', '...kbkbkbkbkk...', '...kbkbkbkbkk...', '...kbkbkbkbkk...', '...kbkbkbkbkk...', '...kbkbkbkbkk...', '...kkkkkkkkkk...'],
+    mail: ['', '', '', '.kkkkkkkkkkkkkk.', '.kkwwwwwwwwwwkk.', '.kwkwwwwwwwwkwk.', '.kwwkwwwwwwkwwk.', '.kwwwkwwwwkwwwk.', '.kwwwwkkkkwwwwk.', '.kwwwwwwwwwwwwk.', '.kwwwwwwwwwwwwk.', '.kkkkkkkkkkkkkk.'],
+    lock: ['', '.....kkkkkk.....', '....kk....kk....', '....k......k....', '....k......k....', '..kkkkkkkkkkkk..', '..kbbbbbbbbbbk..', '..kbbbbkkbbbbk..', '..kbbbbkkbbbbk..', '..kbbbbbkbbbbk..', '..kbbbbbkbbbbk..', '..kbbbbbbbbbbk..', '..kkkkkkkkkkkk..'],
+    modem: ['', '..kkkkk..kkkkk..', '..kbbbkkkkbbbk..', '..kkkkbbbbkkkk..', '.....kbbbbk.....', '..kkkkkkkkkkkk..', '.kbbbbbbbbbbbbk.', '.kbkbkbkbkbkbbk.', '.kbbbbbbbbbbbbk.', '.kbakkkkkkkkbbk.', '.kbbbbbbbbbbbbk.', '.kkkkkkkkkkkkkk.'],
+    terminal: ['', '.kkkkkkkkkkkkkk.', '.kbbbbbbbbbbbbk.', '.kbkkkkkkkkkkbk.', '.kbkakkkkkkkkbk.', '.kbkkakkkkkkkbk.', '.kbkakkaaakkkbk.', '.kbkkkkkkkkkkbk.', '.kbkkkkkkkkkkbk.', '.kbbbbbbbbbbbbk.', '.kkkkkkkkkkkkkk.', '..kddddddddddk..', '.kkkkkkkkkkkkkk.'],
+    wall: ['......a.........', '.....aaa...a....', '....aakaa.aaa...', '.kkkkkkkkkkkkkk.', '.kbbbbbkbbbbbbk.', '.kkkkkkkkkkkkkk.', '.kbbkbbbbbbkbbk.', '.kkkkkkkkkkkkkk.', '.kbbbbbkbbbbbbk.', '.kkkkkkkkkkkkkk.', '.kbbkbbbbbbkbbk.', '.kkkkkkkkkkkkkk.'],
+    trophy: ['', '..kkkkkkkkkkkk..', 'kkkaaaaaaaaaakkk', 'k.kaaaaaaaaaak.k', 'k.kaawaaaaaaak.k', '.kkaawaaaaaaakk.', '...kaaaaaaaak...', '....kaaaaaak....', '......kaak......', '......kaak......', '.....kkaakk.....', '....kbbbbbbk....', '....kkkkkkkk....'],
+    gear: ['', '......kkkk......', '..kk..kbbk..kk..', '..kbkkkbbkkkbk..', '...kbbbbbbbbk...', '.kkkbbkkkkbbkkk.', '.kbbbkk..kkbbbk.', '.kbbbk....kbbbk.', '.kbbbk....kbbbk.', '.kbbbkk..kkbbbk.', '.kkkbbkkkkbbkkk.', '...kbbbbbbbbk...', '..kbkkkbbkkkbk..', '..kk..kbbk..kk..', '......kkkk......'],
+    book: ['', '..kkkkkkkkkkk...', '..kakkkkkkkkkk..', '..kakwwwwwwwkk..', '..kakwkkkkkwkk..', '..kakwwwwwwwkk..', '..kakwkkkkwwkk..', '..kakwwwwwwwkk..', '..kakwkkkkkwkk..', '..kakwwwwwwwkk..', '..kakkkkkkkkkk..', '..kakwwwwwwwwk..', '..kkkkkkkkkkkk..'],
+    cards: ['', '..kkkkkkkk......', '..kwwwwwwk......', '..kwkwwkkkkkkkk.', '..kwwwwkwwwwwwk.', '..kwwwwkwakwawk.', '..kwwwwkwaaaaak.', '..kwwwwkwaaaaak.', '..kkkkkkwwaaawk.', '.......kwwwawwk.', '.......kwwwwwwk.', '.......kkkkkkkk.'],
+    case: ['', '....kkkkk.......', '...kwwwwwk......', '..kwwbwwwwk.....', '..kwbwwwwwk.....', '..kwwwwwwwk.....', '..kwwwwwwwk.....', '...kwwwwwk......', '....kkkkkkk.....', '..........kk....', '...........kk...', '............kk..', '.............kk.'],
+    hourglass: ['..kkkkkkkkkkkk..', '..kbbbbbbbbbbk..', '...kwwwwwwwwk...', '...kwaaaaaawk...', '....kwaaaawk....', '.....kwaawk.....', '......kwwk......', '......kwwk......', '.....kwwawk.....', '....kwwwawwk....', '...kwwwaaawwk...', '...kwaaaaaaak...', '..kbbbbbbbbbbk..', '..kkkkkkkkkkkk..'],
+    bomb: ['..........a.....', '.........a.a....', '........kk......', '.......k........', '....kkkkkk......', '...kkkkkkkk.....', '..kkwkkkkkkk....', '..kwkkkkkkkk....', '..kkkkkkkkkk....', '..kkkkkkkkkk....', '...kkkkkkkk.....', '....kkkkkk......'],
+    owl: ['', '..k..........k..', '..kk........kk..', '..kbkkkkkkkkbk..', '..kbbbbbbbbbbk..', '.kbwwwbbbbwwwbk.', '.kbwakwbbwakwbk.', '.kbwwwbbbbwwwbk.', '.kbbbbbaabbbbbk.', '.kbbbbbbabbbbbk.', '.kbbdbdbbdbdbbk.', '..kbbdbdbdbdbk..', '...kbbbbbbbbk...', '....kkkkkkkk....', '....a.a..a.a....'],
+    speaker: ['', '......k.........', '.....kk......k..', '....kbk...k...k.', 'kkkkbbk....k..k.', 'kbbbbbk..k..k..k', 'kbbbbbk...k.k..k', 'kbbbbbk...k.k..k', 'kbbbbbk..k..k..k', 'kkkkbbk....k..k.', '....kbk...k...k.', '.....kk......k..', '......k.........'],
+    mute: ['', '......k.........', '.....kk.........', '....kbk.........', 'kkkkbbk..k...k..', 'kbbbbbk...k.k...', 'kbbbbbk....k....', 'kbbbbbk...k.k...', 'kbbbbbk..k...k..', 'kkkkbbk.........', '....kbk.........', '.....kk.........', '......k.........'],
+    start: ['', '.kkkkkk.kkkkkk..', '.kaaaak.kbbbbk..', '.kaaaak.kbbbbk..', '.kaaaak.kbbbbk..', '.kkkkkk.kkkkkk..', '................', '.kkkkkk.kkkkkk..', '.kbbbbk.kwwwwk..', '.kbbbbk.kwwwwk..', '.kbbbbk.kwwwwk..', '.kkkkkk.kkkkkk..'],
+    power: ['', '.......kk.......', '...kk..kk..kk...', '..kk...kk...kk..', '.kk....kk....kk.', '.kk....kk....kk.', '.kk....kk....kk.', '.kk..........kk.', '.kk..........kk.', '..kk........kk..', '...kkk....kkk...', '.....kkkkkk.....'],
+    vault: ['', '.kkkkkkkkkkkkkk.', '.kbbbbbbbbbbbbk.', '.kbkkkkkkkkkkbk.', '.kbkwwwkkwwwkbk.', '.kbkwkkaakkwkbk.', '.kbkwkaaaakwkbk.', '.kbkwkkaakkwkbk.', '.kbkwwwkkwwwkbk.', '.kbkkkkkkkkkkbk.', '.kbbbbbbbbbbbbk.', '.kkkkkkkkkkkkkk.', '..kk........kk..'],
+    boss: ['', '.....kkkkkk.....', '....kbbbbbbk....', '....kbkbbkbk....', '....kbbbbbbk....', '....kbbkkbbk....', '.....kbbbbk.....', '...kkkkaakkkk...', '..kwwwkaakwwwk..', '..kwwwwkkwwwwk..', '..kwwwwkkwwwwk..', '..kwwwwwwwwwwk..', '..kkkkkkkkkkkk..'],
+    coin: ['', '.....kkkkkk.....', '...kkaaaaaakk...', '..kaaaaakaaaak..', '..kaaaakkkaaak..', '.kaaaakakaaaaak.', '.kaaaaakkkaaaak.', '.kaaaaaaakaaaak.', '.kaaaakkkkaaaak.', '..kaaaaakaaaak..', '..kaaaaaaaaaak..', '...kkaaaaaakk...', '.....kkkkkk.....']
+  };
+  const cache = {};
+  const svg = name => cache[name] || (cache[name] = px(MAPS[name] || MAPS.file));
+  const el = (name, cls) => h('span', { class: 'ico' + (cls ? ' ' + cls : ''), html: svg(name) });
+  return { svg, el, MAPS, PAL };
+})();
+
+/* ============================== FX ============================== */
+const FX = (() => {
+  function toast(text, opts = {}) {
+    const wrap = $('#toasts');
+    while (wrap.children.length > 2) wrap.firstChild.remove();
+    const t = h('div', { class: 'toast' + (opts.dark ? ' dark' : ''), role: 'status' },
+      opts.icon ? Icons.el(opts.icon) : null, h('div', { text }));
+    if (opts.onclick) { t.style.cursor = 'pointer'; t.addEventListener('click', () => { t.remove(); opts.onclick(); }); }
+    wrap.append(t);
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 220); }, opts.ms || 2200);
+  }
+  function shake() {
+    const a = $('#app');
+    if (Settings.reduced()) {
+      a.classList.add('flash'); setTimeout(() => a.classList.remove('flash'), 220);
+      return;
+    }
+    a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
+    setTimeout(() => a.classList.remove('shake'), 360);
+  }
+  let floppyT = 0;
+  function floppy() {
+    const f = $('#tb-floppy'); if (!f) return;
+    f.classList.add('on'); clearTimeout(floppyT);
+    floppyT = setTimeout(() => f.classList.remove('on'), 900);
+  }
+  /** Stamp animation over a positioned container. */
+  function stamp(container, text, sub, fail) {
+    const s = h('div', { class: 'stamp' + (fail ? ' fail' : '') }, text, sub ? h('small', { text: sub }) : null);
+    container.append(s);
+    Sound.sfx.stamp();
+    return s;
+  }
+  /** Hourglass "Loading..." window; resolves after ms. */
+  function busy(label, ms = 650) {
+    const quick = Settings.reduced() ? Math.min(ms, 250) : ms;
+    document.body.classList.add('busy');
+    const b = h('div', { id: 'busy' },
+      h('div', { class: 'win' },
+        h('div', { class: 'titlebar' }, h('div', { class: 'stripes' }), h('div', { class: 'ttl', text: 'Please wait' }), h('div', { class: 'stripes' })),
+        h('div', { class: 'win-body' },
+          h('div', { class: 'bz' }, Icons.el('hourglass'), h('div', { text: label })),
+          h('div', { class: 'loadbar', style: '--d:' + quick + 'ms' }, h('i')))));
+    document.body.append(b);
+    return U.wait(quick).then(() => { b.remove(); document.body.classList.remove('busy'); });
+  }
+  return { toast, shake, floppy, stamp, busy };
+})();
+
+/* ============================== Window + Modal ============================== */
+/** Build a 90s window: title bar with close + minimize boxes. */
+function Win(title, body, opts = {}) {
+  const closeBox = h('button', { class: 'wbox close' + (opts.onClose ? '' : ' dead'), 'aria-label': 'Close ' + title, tabindex: opts.onClose ? null : '-1' });
+  const minBox = h('button', { class: 'wbox min dead', 'aria-hidden': 'true', tabindex: '-1' });
+  if (opts.onClose) closeBox.addEventListener('click', () => { Sound.sfx.click(); opts.onClose(); });
+  else closeBox.addEventListener('click', () => { Sound.sfx.click(); FX.toast('This window cannot be closed. It\'s the night shift.'); });
+  minBox.addEventListener('click', () => { Sound.sfx.click(); FX.toast('Minimize is disabled by your administrator.'); });
+  const bodyEl = h('div', { class: 'win-body' + (opts.tight ? ' tight' : '') }, body);
+  const w = h('section', { class: 'win' + (opts.cls ? ' ' + opts.cls : ''), 'aria-label': title },
+    h('div', { class: 'titlebar' }, closeBox, h('div', { class: 'stripes' }), h('div', { class: 'ttl', text: title }), h('div', { class: 'stripes' }), minBox),
+    bodyEl);
+  w.body = bodyEl;
+  return w;
+}
+
+const Modal = (() => {
+  let depth = 0;
+  const listeners = [];
+  /**
+   * open({title, body, buttons:[{label, value, primary}], closable, pause}) -> Promise(value)
+   * `pause:true` dialogs freeze the ticket timer while visible.
+   */
+  function open(o) {
+    return new Promise(resolve => {
+      let done = false;
+      const layer = h('div', { class: 'modal-layer', role: 'dialog', 'aria-modal': 'true', 'aria-label': o.title || 'Dialog' });
+      const close = val => {
+        if (done) return; done = true;
+        layer.remove(); depth--;
+        if (o.pause) listeners.forEach(f => f(-1));
+        resolve(val);
+      };
+      const w = Win(o.title || 'Message', o.body, { onClose: o.closable === false ? null : () => close(o.closeValue == null ? null : o.closeValue), cls: o.cls });
+      if (o.buttons && o.buttons.length) {
+        const acts = h('div', { class: 'modal-actions' });
+        o.buttons.forEach(b => {
+          const btn = h('button', { class: 'btn' + (b.primary ? ' primary' : '') }, b.icon ? Icons.el(b.icon) : null, b.label);
+          btn.addEventListener('click', () => { Sound.sfx.click(); if (b.onClick && b.onClick(close) === false) return; close(b.value); });
+          acts.append(btn);
+        });
+        w.append(acts);
+      }
+      layer.append(w);
+      layer.addEventListener('click', e => { if (e.target === layer && o.closable !== false && o.backdropClose) close(null); });
+      $('#modals').append(layer);
+      depth++;
+      if (o.pause) listeners.forEach(f => f(1));
+      if (o.onOpen) o.onOpen(close, w);
+    });
+  }
+  /** Classic "System Error" popup with bomb icon, shake and buzz. */
+  function error(msg, title = 'System Error', btn = 'OK') {
+    Sound.sfx.err(); FX.shake();
+    return open({ title, pause: true, closable: false, body: h('div', { class: 'err-row' }, Icons.el('bomb'), h('div', { class: 'msg', text: msg })), buttons: [{ label: btn, primary: true, value: true }] });
+  }
+  function alert(title, msg, icon = 'computer', btn = 'OK') {
+    return open({ title, body: h('div', { class: 'err-row' }, Icons.el(icon), h('div', { class: 'msg', text: msg })), buttons: [{ label: btn, primary: true, value: true }] });
+  }
+  function confirm(title, msg, yes = 'OK', no = 'Cancel', icon = 'computer') {
+    return open({ title, closeValue: false, body: h('div', { class: 'err-row' }, Icons.el(icon), h('div', { class: 'msg', text: msg })), buttons: [{ label: no, value: false }, { label: yes, primary: true, value: true }] });
+  }
+  const closeAll = () => { $('#modals').querySelectorAll('.modal-layer').forEach(l => l.remove()); depth = 0; };
+  return { open, error, alert, confirm, isOpen: () => depth > 0, onPause: f => listeners.push(f), closeAll };
+})();
+
+/* ============================== Countdown ============================== */
+/** Pausable countdown based on performance.now() so it never drifts. */
+class Countdown {
+  constructor(seconds, onTick, onExpire) {
+    this.total = seconds * 1000; this.left = this.total;
+    this.onTick = onTick; this.onExpire = onExpire;
+    this.paused = 0; this.done = false; this.last = performance.now();
+    this.iv = setInterval(() => this.tick(), 200);
+    this.tick();
+  }
+  tick() {
+    const now = performance.now();
+    if (!this.paused && !this.done) this.left -= now - this.last;
+    this.last = now;
+    if (this.done) return;
+    this.onTick(this.left / 1000, this.paused > 0);
+    if (this.left <= 0) { this.done = true; this.stop(); this.onExpire(); }
+  }
+  pause() { if (this.done) return; this.tick(); this.paused++; this.onTick(this.left / 1000, true); }
+  resume() { if (this.done || this.paused <= 0) return; this.paused--; this.last = performance.now(); this.tick(); }
+  get elapsed() { return (this.total - this.left) / 1000; }
+  stop() { clearInterval(this.iv); this.done = true; }
+}
+
+/* ============================== Screen ============================== */
+const Screen = (() => {
+  let cleanup = null, name = '';
+  function set(id, node, onLeave, title) {
+    if (cleanup) { try { cleanup(); } catch (e) { /* ignore */ } }
+    cleanup = onLeave || null; name = id;
+    const s = $('#screen');
+    s.textContent = '';
+    s.append(node);
+    s.scrollTop = 0;
+    Taskbar.setTitle(title || (id === 'desktop' ? 'Program Manager' : 'NIGHTSHIFT.EXE'));
+  }
+  return { set, get name() { return name; } };
+})();
+
+/* ============================== Ach (achievements + wallpapers) ============================== */
+const Ach = (() => {
+  const LIST = [
+    { id: 'first', name: 'Hello, World', desc: 'Close your first ticket.' },
+    { id: 'nocrash', name: 'Never Crashed', desc: 'Finish a whole day with zero strikes.' },
+    { id: 'typist', name: 'Speed Typist', desc: 'Close a Terminal ticket in under 45 seconds.' },
+    { id: 'manual', name: 'Read the Manual', desc: 'Open HELP.TXT or type HELP in the terminal.' },
+    { id: 'nohint', name: 'Figured It Out', desc: 'Finish a day without using a single hint.' },
+    { id: 'streak', name: 'On a Roll', desc: 'Close 5 tickets in a row without a strike.' },
+    { id: 'ports', name: 'Port Authority', desc: 'Clear a Tier III firewall without a breach.' },
+    { id: 'firstguess', name: 'Lucky Guess', desc: 'Crack a password in 3 guesses or fewer.' },
+    { id: 'daily', name: 'Daily Grind', desc: 'Finish a daily challenge shift.' },
+    { id: 'root', name: 'Root Access', desc: 'Reach the rank of Root.' },
+    { id: 'caught', name: 'Case Closed', desc: 'Unmask NIGHTOWL.' },
+    { id: 'saver', name: 'Screen Saved', desc: 'Leave the desktop idle long enough.', hidden: true },
+    { id: 'konami', name: 'Up Up Down Down', desc: 'Enter the old cheat code.', hidden: true },
+    { id: 'sol', name: 'Productivity Killer', desc: 'Win a game of solitaire on company time.', hidden: true }
+  ];
+  const WALLS = [
+    { id: 'dither', name: 'Beige Dither', how: 'Default' },
+    { id: 'weave', name: 'Office Weave', how: 'Finish Day 1' },
+    { id: 'bricks', name: 'Basement Brick', how: 'Reach rank: Tech' },
+    { id: 'circuit', name: 'Circuit Board', how: '???' },
+    { id: 'root', name: 'Root Terminal', how: 'Unmask NIGHTOWL' }
+  ];
+  const has = id => !!Store.d.ach[id];
+  function unlock(id) {
+    if (has(id)) return false;
+    const a = LIST.find(x => x.id === id); if (!a) return false;
+    Store.d.ach[id] = Date.now(); Store.save();
+    setTimeout(() => { Sound.sfx.win(); FX.toast('Achievement: ' + a.name, { icon: 'trophy', ms: 3200 }); }, 350);
+    return true;
+  }
+  function wall(id) {
+    if (Store.d.walls.includes(id)) return false;
+    Store.d.walls.push(id); Store.save();
+    const w = WALLS.find(x => x.id === id);
+    setTimeout(() => FX.toast('New wallpaper unlocked: ' + (w ? w.name : id), { icon: 'image', ms: 3200 }), 1200);
+    return true;
+  }
+  return { LIST, WALLS, has, unlock, wall };
+})();
+
+/* ============================== Case (the mystery) ============================== */
+const Case = (() => {
+  const SUSPECTS = [
+    { id: 'gary', name: 'Gary Dunmore', role: 'VP of Sales', dept: 'Sales', blurb: 'The founder\'s nephew. Owns a pager he never answers.' },
+    { id: 'linda', name: 'Linda Okafor', role: 'Senior Accountant', dept: 'Accounting', blurb: 'Knows where every penny goes. Allegedly.' },
+    { id: 'marty', name: 'Marty Kowalski', role: 'Facilities Manager', dept: 'Facilities', blurb: 'Has a key to every door in the building.' },
+    { id: 'dee', name: 'Dee Ramirez', role: 'Receptionist', dept: 'Reception', blurb: 'Sees everyone come and go. Remembers everything.' },
+    { id: 'phil', name: 'Phil Haverford', role: 'IT Manager', dept: 'IT', blurb: 'Currently "on vacation". Left his passwords on sticky notes.' }
+  ];
+  const ATTRS = {
+    floor: { label: 'Office floor', vals: ['2', '3', '4'] },
+    drink: { label: 'Drinks', vals: ['Coffee', 'Tea', 'Cola'] },
+    hand: { label: 'Handedness', vals: ['Left', 'Right'] },
+    specs: { label: 'Glasses', vals: ['Yes', 'No'] },
+    car: { label: 'Drives a', vals: ['Sedan', 'Pickup', 'Hatchback'] }
+  };
+  const KEYS = Object.keys(ATTRS);
+  // Each fact has several phrasings so repeats still read fresh.
+  const POS = {
+    floor: v => [`NIGHTOWL logged in from a terminal on Floor ${v}.`, `The 2 AM elevator log stops at Floor ${v} - and so does NIGHTOWL's trail.`, `NIGHTOWL's print job came out of the Floor ${v} printer.`],
+    drink: v => [`A ring of ${v.toLowerCase()} on the server-room desk. NIGHTOWL drinks ${v.toLowerCase()}.`, `NIGHTOWL complained in a chat log: "out of ${v.toLowerCase()} again."`, `Empty ${v.toLowerCase()} cup by the modem. NIGHTOWL's a ${v.toLowerCase()} person.`],
+    hand: v => [`The server-room mouse was moved to the ${v.toLowerCase()} side. NIGHTOWL is ${v.toLowerCase()}-handed.`, `Smudges on the keypad say NIGHTOWL types ${v.toLowerCase()}-handed.`],
+    specs: v => v === 'Yes'
+      ? ['Security cam still: NIGHTOWL is wearing glasses.', 'A lens-cleaning cloth was left by the server. NIGHTOWL wears glasses.']
+      : ['Security cam still: NIGHTOWL has no glasses on.', 'NIGHTOWL read 6-pt font off the monitor from across the room. No glasses needed.'],
+    car: v => [`Only one car in the lot at 2 AM: a ${v.toLowerCase()}. It's NIGHTOWL's.`, `Gate camera: NIGHTOWL left in a ${v.toLowerCase()}.`]
+  };
+  const NEG = {
+    floor: v => [`Floor ${v} was alarmed all night. NIGHTOWL doesn't work on Floor ${v}.`, `Badge logs clear everyone on Floor ${v}.`],
+    drink: v => [`No ${v.toLowerCase()} anywhere near the server room. NIGHTOWL doesn't drink it.`, `NIGHTOWL's chat log: "${v.toLowerCase()}? gross."`],
+    car: v => [`Parking log: no ${v.toLowerCase()} in the lot that night. NIGHTOWL doesn't drive one.`, `Every ${v.toLowerCase()} owner has a gate alibi.`]
+  };
+  const DEPT = d => [`NIGHTOWL's access code isn't in the ${d} range.`, `${d} badges were all accounted for. NIGHTOWL isn't from ${d}.`];
+
+  /** Build a deterministic mystery from the campaign seed. */
+  function build(seed) {
+    const r = U.rng(seed + ':case');
+    let people = null, hacker = 0;
+    for (let tries = 0; tries < 400; tries++) {
+      people = SUSPECTS.map(s => ({
+        ...s, a: {
+          floor: r.pick(ATTRS.floor.vals), drink: r.pick(ATTRS.drink.vals),
+          hand: r.chance(0.35) ? 'Left' : 'Right', specs: r.chance(0.5) ? 'Yes' : 'No', car: r.pick(ATTRS.car.vals)
+        }
+      }));
+      hacker = r.int(0, 4);
+      const H = people[hacker].a;
+      const ok = people.every((p, i) => i === hacker || KEYS.filter(k => p.a[k] !== H[k]).length >= 2);
+      if (ok) break;
+    }
+    const H = people[hacker].a;
+    const elim = pred => people.map((p, i) => i).filter(i => i !== hacker && pred(people[i]));
+    const facts = [];
+    KEYS.forEach(k => {
+      const e = elim(p => p.a[k] !== H[k]);
+      if (e.length) facts.push({ k: k + '=', e, texts: POS[k](H[k]) });
+      if (NEG[k]) ATTRS[k].vals.forEach(v => {
+        if (v === H[k]) return;
+        const e2 = elim(p => p.a[k] === v);
+        if (e2.length) facts.push({ k: k + '!' + v, e: e2, texts: NEG[k](v) });
+      });
+    });
+    people.forEach((p, i) => { if (i !== hacker) facts.push({ k: 'dept' + i, e: [i], texts: DEPT(p.dept) }); });
+    // Greedy pick favoring small eliminations + under-covered suspects -> needs cross-referencing.
+    const cover = [0, 0, 0, 0, 0], used = {}, out = [];
+    for (let n = 0; n < 25; n++) {
+      let best = null, bs = -1;
+      facts.forEach(f => {
+        const avg = f.e.reduce((s, i) => s + 1 / (1 + cover[i]), 0) / f.e.length;
+        const s = avg / Math.sqrt(f.e.length) / (1 + 2 * (used[f.k] || 0)) + r.next() * 0.25;
+        if (s > bs) { bs = s; best = f; }
+      });
+      const u = used[best.k] || 0; used[best.k] = u + 1;
+      best.e.forEach(i => cover[i]++);
+      out.push({ text: best.texts[u % best.texts.length], e: best.e.slice() });
+    }
+    return { people, hacker, clues: r.shuffle(out), facts };
+  }
+  /** Which suspects remain possible given the clue indices collected? */
+  function alive(mystery, collected, extra = []) {
+    const out = new Set();
+    collected.forEach(c => mystery.clues[c.i].e.forEach(i => out.add(i)));
+    extra.forEach(f => f.e.forEach(i => out.add(i)));
+    return [0, 1, 2, 3, 4].filter(i => !out.has(i));
+  }
+  const SRC = {
+    password: 'Cracked mailbox:', sorter: 'Recovered .LOG file:', dialup: 'Decoded transmission:',
+    terminal: 'Decrypted archive:', firewall: 'Packet trace:', backup: 'Backup tape:'
+  };
+  const MOTIVE = {
+    gary: 'Gary was wiring pension money to his own "consulting firm", Moonbeam Holdings. He was also the one stealing everyone\'s yogurt.',
+    linda: 'Linda had been skimming the books for years. The 2 AM logins were her covering tracks before the audit.',
+    marty: 'Marty used his master keys to get into the server room every night. He said he "deserved a raise". The cold server room was hiding the heat from his own PC.',
+    dee: 'Dee knew everybody\'s schedule - and everybody\'s password. She\'d been reading them off sticky notes from the front desk for months.',
+    phil: 'Phil\'s "vacation" was a lie. He was dialing in from the parking lot every night with a laptop and a thermos.'
+  };
+  return { SUSPECTS, ATTRS, KEYS, build, alive, SRC, MOTIVE };
+})();
+
+/* ============================== Mail ============================== */
+const Mail = (() => {
+  const PIKE = 'R. Pike <rpike@dunmorepike.com>';
+  const INTRO = [
+    { from: PIKE, subj: 'Welcome aboard, temp', body: 'Phil is "on vacation", so you\'re covering nights.\n\nFive tickets a night. Close them fast. Don\'t break anything.\n\nAlso: somebody has been poking around our network after hours. If you find anything weird, it goes in CASE.TXT.\n\n- R. Pike, Operations' },
+    { from: PIKE, subj: 'Money is moving', body: '$48,000 left the pension account overnight. Wired to something called "Moonbeam Holdings".\n\nThe auditors arrive Friday. I want this fixed before then.\n\n- R.P.' },
+    { from: 'Dee Ramirez <dee@dunmorepike.com>', subj: 'psst', body: 'Heard you\'re looking into the night stuff.\n\nI see everybody come and go. Except at night. Which is kind of the problem.\n\nWatch your back, temp.\n\n- Dee (front desk)' },
+    { from: PIKE, subj: 'Re: hello temp', body: 'I saw the email.\n\nCorporate says if we don\'t have a name by Friday, the temp takes the fall.\n\nThat\'s you. No pressure.\n\n- R.P.' },
+    { from: PIKE, subj: 'Last night', body: 'The auditors are in the lobby at 9 AM.\n\nClose your tickets. Then give me NIGHTOWL.\n\n- R.P.' }
+  ];
+  const OUTRO = [
+    { from: PIKE, subj: '2:14 AM', body: 'Payroll was opened at 2:14 AM last night by a user signing in as "NIGHTOWL".\n\nIt wasn\'t you. Right?\n\nKeep collecting whatever you find. It\'s all in CASE.TXT.' },
+    { from: PIKE, subj: 'Inside job', body: 'The server room door wasn\'t forced. NIGHTOWL has a key.\n\nOnly five people do: Gary, Linda, Marty, Dee and Phil.\n\nTheir personnel files are in CASE.TXT. Compare them against your evidence.' },
+    { from: 'NIGHTOWL <nightowl@???>', subj: 'hello temp', body: 'nice work.\n\ntoo bad the logs will say it was you.\n\n- N' },
+    { from: 'Gary Dunmore <gary@dunmorepike.com>', subj: 'FW: FW: FW: FW: dancing baby', body: 'LOL!!! you HAVE to see this. 2.4 MB, worth it.\n\n[DANCING_BABY.AVI - attachment removed by administrator]\n\nP.S. pike says ur doing ok. for a temp.' },
+    { from: PIKE, subj: 'Well?', body: 'That\'s every ticket. The auditors are parking.\n\nOpen your evidence. Pick a name.\n\nIf you get it wrong, it\'s your name on the report.' }
+  ];
+  const PRESSURE = [
+    { from: PIKE, subj: 'Tickets', body: 'The help desk queue is longer than my commute. Speed it up.' },
+    { from: 'Gary Dunmore <gary@dunmorepike.com>', subj: 'my pager', body: 'has anyone seen my pager. it\'s beige. like everything.' },
+    { from: 'Marty Kowalski <marty@dunmorepike.com>', subj: 'Thermostat', body: 'Server room is at 58 degrees. That\'s on purpose. Do NOT touch it.' },
+    { from: 'Linda Okafor <linda@dunmorepike.com>', subj: 'Expense reports', body: 'Reminder: pizza is NOT a reimbursable "network supply".' },
+    { from: PIKE, subj: 'Clock\'s ticking', body: 'Corporate is watching the ticket times. So am I.' },
+    { from: 'Dee Ramirez <dee@dunmorepike.com>', subj: 'Coffee', body: 'Coffee machine\'s broken. Again. Sorry, night shift.' },
+    { from: 'Phil Haverford <phil@dunmorepike.com>', subj: 'Out of Office: Re: help', body: 'I am out of the office with limited access to email. If this is urgent, it isn\'t.' },
+    { from: PIKE, subj: 'FYI', body: 'Every closed ticket goes on your pay stub. So does every hint.' },
+    { from: 'Facilities <marty@dunmorepike.com>', subj: 'Parking', body: 'Whoever keeps parking across two spaces at 2 AM: I know it\'s you.' }
+  ];
+  const mk = (m, extra) => Object.assign({ read: false, at: Date.now() }, m, extra || {});
+  return {
+    intro: day => mk(INTRO[day - 1]),
+    outro: day => mk(OUTRO[day - 1]),
+    pressure: (rng) => mk(rng.pick(PRESSURE)),
+    PIKE
+  };
+})();
+
+/* ============================== Puzzles ==============================
+   Each puzzle: Puzzles[type](root, ctx) -> { hint(), destroy() }
+   ctx = { rng, tier, tutorial, mistake(msg), fail(msg), solve(info), emit(ev) }
+   - mistake(): accuracy penalty; 3 in one attempt => strike + puzzle reset (handled by Game)
+   - fail():    immediate strike + reset (e.g. locked out of an account)
+   - hint():    returns a message string (charged), {text, free:true}, or null (unavailable, not charged)
+   ===================================================================== */
+const Puzzles = {};
+Icons.MAPS.calendar = ['', '..k..k...k..k...', '.kkkkkkkkkkkkkk.', '.kaaaaaaaaaaaak.', '.kkkkkkkkkkkkkk.', '.kwkwkwkwkwkwwk.', '.kwwwwwwwwwwwwk.', '.kwkwkwkkkwkwwk.', '.kwwwwwkwkwwwwk.', '.kwkwkwkkkwkwwk.', '.kwwwwwwwwwwwwk.', '.kwkwkwkwkwwwwk.', '.kkkkkkkkkkkkkk.'];
+Icons.MAPS.sticky = ['', '..aaaaaaaaaaaa..', '..aaaaaaaaaaaa..', '..akkkkkkkkaaa..', '..aaaaaaaaaaaa..', '..akkkkkkaaaaa..', '..aaaaaaaaaaaa..', '..akkkkkkkkkaa..', '..aaaaaaaaaaaa..', '..akkkkaaaaaaa..', '..aaaaaaaaaaak..', '..aaaaaaaaaakk..', '..kkkkkkkkkkk...'];
+const TWISTS = {
+  password: ['Per-digit feedback', 'Peg feedback only', 'Repeats allowed · one clue is stale'],
+  sorter: ['4 rules', 'Time rules + CONFIDENTIAL', '9 rules · owner & size exceptions'],
+  dialup: ['Standard handshake', 'Fast line · 6 tones', 'Line echo: enter in REVERSE'],
+  terminal: ['Key on file', 'Hidden files', 'Split key · decoy · nested dirs'],
+  firewall: ['Standard scan', '+ MODE: numbers count only up/down/left/right', 'HEAVY PORTS: 3 traps count double']
+};
+
+/* ---------------- 1. PASSWORD CRACKER (Mastermind) ---------------- */
+Puzzles.password = function (root, ctx) {
+  const r = ctx.rng, tier = ctx.tier;
+  const CFG = {
+    1: { len: 4, sym: '123456', max: 8, mode: 'wordle', rep: false },
+    2: { len: 5, sym: '12345678', max: 10, mode: 'pegs', rep: false },
+    3: { len: 5, sym: '12345678', max: 9, mode: 'pegs', rep: true }
+  }[tier];
+  const pool = CFG.sym.split('');
+  const code = CFG.rep ? Array.from({ length: CFG.len }, () => r.pick(pool)) : r.shuffle(pool).slice(0, CFG.len);
+  const STAFF = ['LINDA.O', 'GARY.D', 'MARTY.K', 'DEE.R', 'PHIL.H', 'JANET.W', 'STAN.L', 'BEV.M'];
+  const user = r.pick(STAFF);
+  const nice = user[0] + user.split('.')[0].slice(1).toLowerCase();
+  const posIdx = r.int(0, CFG.len - 1);
+  const notIn = r.pick(pool.filter(s => !code.includes(s)));
+  const inSym = r.pick(code.filter((s, i) => i !== posIdx));
+  const stale = tier === 3;
+  const staleSym = r.pick(pool.filter(s => s !== code[posIdx]));
+  const ORD = ['1st', '2nd', '3rd', '4th', '5th'];
+  const known = new Set();
+  let cur = [], guesses = 0, dead = false;
+
+  // --- clue inspectors ---
+  function showSticky() {
+    const note = stale
+      ? h('div', { class: 'sticky old' }, h('span', { class: 'oldtag', text: 'OLD · 1995' }), `${nice}'s pw:`, h('br'), `${ORD[posIdx]} digit is ${staleSym}`)
+      : h('div', { class: 'sticky' }, `pw: ${ORD[posIdx]} digit = ${code[posIdx]}`, h('br'), '- don\'t tell IT!');
+    Modal.open({ title: 'Inspect: STICKY.NOTE', body: h('div', {}, note, h('p', { class: 'small muted center', text: stale ? 'Peeled off the monitor. It has been there a while...' : 'Found stuck under the keyboard.' })), buttons: [{ label: 'Close', primary: true }] });
+  }
+  function showCal() {
+    const g = h('div', { class: 'grid' });
+    'SMTWTFS'.split('').forEach(d => g.append(h('div', { class: 'dn', text: d })));
+    g.append(h('div'), h('div')); // Oct 1, 1996 was a Tuesday
+    for (let d = 1; d <= 31; d++) g.append(h('div', { class: String(d) === notIn ? 'xx' : '', text: d }));
+    Modal.open({
+      title: 'Inspect: CALENDAR', body: h('div', {},
+        h('div', { class: 'cal' }, h('div', { class: 'mh', text: 'OCTOBER 1996' }), g, h('div', { class: 'note', text: `the ${notIn}${['', 'st', 'nd', 'rd'][notIn] || 'th'} = unlucky. NEVER in my password!` })),
+        h('p', { class: 'small muted center', text: `${nice}'s desk calendar.` })),
+      buttons: [{ label: 'Close', primary: true }]
+    });
+  }
+  function showPhoto() {
+    const svg = `<svg viewBox="0 0 64 48" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+      <rect width="64" height="48" fill="#D9CEB2"/><rect y="34" width="64" height="14" fill="#A89B7C"/>
+      <rect x="4" y="8" width="2" height="26" fill="#1B1915"/><rect x="58" y="8" width="2" height="26" fill="#1B1915"/><rect x="4" y="8" width="56" height="2" fill="#1B1915"/>
+      <rect x="27" y="5" width="10" height="3" fill="#1B1915"/><rect x="27" y="8" width="10" height="9" fill="#EDE6D3"/>
+      <rect x="29" y="11" width="2" height="2" fill="#1B1915"/><rect x="33" y="11" width="2" height="2" fill="#1B1915"/><rect x="30" y="14" width="4" height="1" fill="#1B1915"/>
+      <rect x="22" y="18" width="20" height="18" fill="#1B1915"/><rect x="17" y="18" width="5" height="12" fill="#1B1915"/><rect x="42" y="18" width="5" height="12" fill="#1B1915"/>
+      <rect x="17" y="30" width="5" height="3" fill="#EDE6D3"/><rect x="42" y="30" width="5" height="3" fill="#EDE6D3"/>
+      <rect x="47" y="12" width="2" height="20" fill="#6E6553"/>
+      <text x="32" y="32" font-family="monospace" font-weight="bold" font-size="12" text-anchor="middle" fill="#E39B2D">${inSym}</text>
+      <rect x="24" y="36" width="6" height="10" fill="#34302A"/><rect x="34" y="36" width="6" height="10" fill="#34302A"/></svg>`;
+    Modal.open({
+      title: 'Inspect: PHOTO.BMP', body: h('div', {},
+        h('div', { class: 'polaroid' }, h('div', { html: svg }), h('div', { class: 'cap', text: `${nice} - softball '95. "Lucky #${inSym}, it's in all my passwords!"` })),
+        h('p', { class: 'small muted center', text: 'Pinned to the cubicle wall.' })),
+      buttons: [{ label: 'Close', primary: true }]
+    });
+  }
+  const clueBtn = (icon, label, fn) => {
+    const b = h('button', { class: 'btn pw-clue' }, Icons.el(icon), label);
+    b.addEventListener('click', () => { Sound.sfx.open(); b.classList.add('seen'); fn(); });
+    return b;
+  };
+
+  // --- layout ---
+  const hist = h('div', { class: 'pw-hist', 'aria-live': 'polite' });
+  const curRow = h('div', { class: 'pw-current' });
+  const cols = pool.length === 6 ? 3 : 4;
+  const keypad = h('div', { class: 'keypad', style: `grid-template-columns:repeat(${cols},1fr)` });
+  const key = (label, fn, cls, span) => {
+    const b = h('button', { class: 'btn' + (cls ? ' ' + cls : ''), style: span ? `grid-column:span ${span}` : null, text: label });
+    b.addEventListener('click', () => { if (!dead) fn(); });
+    return b;
+  };
+  pool.forEach(s => keypad.append(key(s, () => press(s))));
+  keypad.append(key('DEL', del, '', cols === 3 ? 1 : 2), key('ENTER', enter, 'primary', 2));
+  const legend = CFG.mode === 'wordle'
+    ? h('div', { class: 'legend' }, h('span', { class: 'pw-cell hit', text: '7' }), 'right spot', h('span', { class: 'pw-cell near', text: '7' }), 'wrong spot', h('span', { class: 'pw-cell miss', text: '7' }), 'not in pw')
+    : h('div', { class: 'legend' }, h('span', { class: 'peg hit' }), 'right digit, right spot', h('span', { class: 'peg near' }), 'right digit, wrong spot');
+
+  root.append(
+    h('div', { class: 'pw-acct' }, 'Account: ', h('b', { text: user }), ` · ${CFG.len} digits (${pool[0]}-${pool[pool.length - 1]})`, CFG.rep ? ' · repeats allowed' : ' · no repeats'),
+    h('div', { class: 'pw-clues' }, clueBtn('sticky', 'Sticky note', showSticky), clueBtn('calendar', 'Calendar', showCal), clueBtn('image', 'Photo', showPhoto)),
+    hist, curRow, keypad, legend);
+
+  function renderCur() {
+    curRow.textContent = '';
+    for (let i = 0; i < CFG.len; i++) {
+      const c = h('div', { class: 'pw-cell' + (i === cur.length ? ' cur' : '') + (known.has(i) ? ' known' : ''), text: cur[i] || '' });
+      curRow.append(c);
+    }
+    curRow.append(h('div', { class: 'pw-left' }, h('b', { text: String(CFG.max - guesses) }), h('br'), 'tries left'));
+  }
+  function press(s) {
+    if (cur.length >= CFG.len) return;
+    cur.push(s); Sound.sfx.key(); renderCur();
+  }
+  function del() { if (cur.length) { cur.pop(); Sound.sfx.key(); renderCur(); } }
+  function grade(g) {
+    const marks = Array(CFG.len).fill('miss'), cc = {};
+    let exact = 0, near = 0;
+    g.forEach((s, i) => { if (s === code[i]) { marks[i] = 'hit'; exact++; } else cc[code[i]] = (cc[code[i]] || 0) + 1; });
+    g.forEach((s, i) => { if (marks[i] !== 'hit' && cc[s] > 0) { cc[s]--; near++; marks[i] = 'near'; } });
+    return { exact, near, marks };
+  }
+  function addRow(g, res) {
+    const row = h('div', { class: 'pw-row' }, h('span', { class: 'n', text: '#' + guesses }));
+    g.forEach((s, i) => row.append(h('div', { class: 'pw-cell' + (CFG.mode === 'wordle' ? ' ' + res.marks[i] : ''), text: s })));
+    if (CFG.mode === 'pegs') {
+      const pegs = h('div', { class: 'pw-pegs', 'aria-label': `${res.exact} exact, ${res.near} misplaced` });
+      for (let i = 0; i < CFG.len; i++) pegs.append(h('i', { class: 'peg ' + (i < res.exact ? 'hit' : i < res.exact + res.near ? 'near' : 'none') }));
+      row.append(pegs);
+    }
+    hist.append(row);
+  }
+  function enter() {
+    if (cur.length < CFG.len) { FX.toast(`Enter all ${CFG.len} digits first.`); Sound.sfx.click(); return; }
+    const g = cur.slice(); cur = []; guesses++;
+    const res = grade(g);
+    addRow(g, res); renderCur();
+    if (res.exact === CFG.len) { dead = true; Sound.sfx.win(); ctx.solve({ guesses }); return; }
+    Sound.sfx.select();
+    if (guesses >= CFG.max) { ctx.fail(`ACCOUNT LOCKED OUT\n\nToo many failed logins on ${user}.\nThe admin reset the password.`); }
+  }
+  const onKey = e => {
+    if (dead || Modal.isOpen()) return;
+    if (pool.includes(e.key)) press(e.key);
+    else if (e.key === 'Backspace') del();
+    else if (e.key === 'Enter') enter();
+  };
+  document.addEventListener('keydown', onKey);
+  renderCur();
+
+  return {
+    hint() {
+      const unknown = [...Array(CFG.len).keys()].filter(i => !known.has(i));
+      if (!unknown.length) return null;
+      const p = r.pick(unknown); known.add(p); renderCur();
+      return `Digit ${p + 1} of the password is ${code[p]}. (Marked in the entry row.)`;
+    },
+    destroy() { dead = true; document.removeEventListener('keydown', onKey); }
+  };
+};
+
+/* ---------------- 2. FILE SORTER ---------------- */
+Puzzles.sorter = function (root, ctx) {
+  const r = ctx.rng, tier = ctx.tier;
+  const isMemo = f => f.base.startsWith('MEMO');
+  const after3 = f => f.time >= 15 * 60;
+  const R = (t, f, to) => ({ t, f, to });
+  const SETS = {
+    1: {
+      folders: ['BOSS', 'ACCTG', 'ARCHIVE', 'TRASH'], exts: ['DOC', 'XLS', 'TMP', 'TXT', 'BMP'], conf: 0, n: ctx.tutorial ? 5 : 6,
+      rules: [R('.TMP files → TRASH', f => f.ext === 'TMP', 'TRASH'), R('.XLS files → ACCTG', f => f.ext === 'XLS', 'ACCTG'),
+        R('MEMO files → BOSS', isMemo, 'BOSS'), R('Everything else → ARCHIVE', () => true, 'ARCHIVE')]
+    },
+    2: {
+      folders: ['BOSS', 'ACCTG', 'ARCHIVE', 'TRASH', 'VAULT'], exts: ['DOC', 'XLS', 'TMP', 'TXT', 'BMP'], conf: 0.22, n: 8,
+      rules: [R('CONFIDENTIAL → VAULT', f => f.conf, 'VAULT'), R('.TMP made after 3:00 PM → ARCHIVE (evidence!)', f => f.ext === 'TMP' && after3(f), 'ARCHIVE'),
+        R('Other .TMP → TRASH', f => f.ext === 'TMP', 'TRASH'), R('MEMO files → BOSS', isMemo, 'BOSS'),
+        R('.XLS files → ACCTG', f => f.ext === 'XLS', 'ACCTG'), R('Everything else → ARCHIVE', () => true, 'ARCHIVE')]
+    },
+    3: {
+      folders: ['BOSS', 'ACCTG', 'ARCHIVE', 'TRASH', 'VAULT', 'QUARANT'], exts: ['DOC', 'XLS', 'TMP', 'TXT', 'BMP', 'EXE'], conf: 0.2, n: 10,
+      rules: [R('.EXE files → QUARANT', f => f.ext === 'EXE', 'QUARANT'), R('CONFIDENTIAL → VAULT', f => f.conf, 'VAULT'),
+        R('.TMP made after 3:00 PM → QUARANT', f => f.ext === 'TMP' && after3(f), 'QUARANT'), R('Other .TMP → TRASH', f => f.ext === 'TMP', 'TRASH'),
+        R('MEMOs owned by PIKE → ARCHIVE', f => isMemo(f) && f.owner === 'PIKE', 'ARCHIVE'), R('Other MEMOs → BOSS', isMemo, 'BOSS'),
+        R('.XLS over 1 MB → ARCHIVE', f => f.ext === 'XLS' && f.size > 1024, 'ARCHIVE'), R('Other .XLS → ACCTG', f => f.ext === 'XLS', 'ACCTG'),
+        R('Everything else → ARCHIVE', () => true, 'ARCHIVE')]
+    }
+  };
+  const S = SETS[tier];
+  const NAMES = { DOC: ['MEMO_##', 'MEMO_Q#', 'LETTER##', 'MINUTES#', 'REPORT##', 'PROPOSAL'], XLS: ['BUDGET96', 'PAYROLL#', 'EXPENSES', 'Q#_SALES', 'INVOIC##'], TMP: ['~WRL####', '~DF##', '~TMP####'], TXT: ['NOTES#', 'README', 'TODO', 'MEMO_##', 'LOG##'], BMP: ['LOGO#', 'CHART##', 'PHOTO#'], EXE: ['SETUP', 'FUNNY', 'PATCH##', 'SCRNSAV', 'DOOM2'] };
+  const OWNERS = ['PIKE', 'LINDA', 'GARY', 'MARTY', 'DEE', 'PHIL', 'JANET'];
+  const ICON = { DOC: 'file', TXT: 'file', XLS: 'sheet', TMP: 'tmp', BMP: 'image', EXE: 'exe' };
+  const FICON = { BOSS: 'boss', ACCTG: 'coin', ARCHIVE: 'folder', TRASH: 'trash', VAULT: 'vault', QUARANT: 'bomb' };
+  const fill = s => s.replace(/#/g, () => r.int(0, 9));
+  function rand() {
+    const ext = r.pick(S.exts);
+    let base = fill(r.pick(NAMES[ext]));
+    if ((ext === 'DOC' || ext === 'TXT') && r.chance(0.3)) base = fill('MEMO_##');
+    const size = ext === 'XLS' ? r.int(40, 2600) : ext === 'TMP' ? r.int(1, 300) : ext === 'EXE' ? r.int(200, 1800) : r.int(2, 900);
+    return { base, ext, name: base + '.' + ext, time: r.int(7 * 60, 23 * 60 + 30), size, owner: r.pick(OWNERS), conf: r.chance(S.conf) };
+  }
+  const ruleOf = f => S.rules.findIndex(x => x.f(f));
+  // pick target rules so every rule shows up, then generate files that land on them
+  let targets = S.rules.map((_, i) => i);
+  while (targets.length < S.n) targets.push(r.int(0, S.rules.length - 1));
+  targets = r.shuffle(targets).slice(0, S.n);
+  const names = new Set(), files = [];
+  targets.forEach(t => {
+    let f = null;
+    for (let k = 0; k < 3000; k++) { const c = rand(); if (ruleOf(c) === t && !names.has(c.name)) { f = c; break; } }
+    if (!f) { do { f = rand(); } while (names.has(f.name)); }
+    names.add(f.name); f.rule = ruleOf(f); files.push(f);
+  });
+
+  let sel = -1, left = files.length, dead = false;
+  const counts = {};
+  const sizeStr = kb => kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb + ' KB';
+  const rulesEl = h('ol', {}, S.rules.map(x => h('li', { text: x.t })));
+  const leftEl = h('div', { class: 'sort-left' });
+  const list = h('div', { class: 'files' });
+  const cards = files.map((f, i) => {
+    const b = h('button', { class: 'btn filecard', 'aria-pressed': 'false' },
+      Icons.el(ICON[f.ext]),
+      h('div', {}, h('div', { class: 'fname' }, f.name, f.conf ? h('span', { class: 'tag-conf', text: 'CONFIDENTIAL' }) : null),
+        h('div', { class: 'meta', text: `${U.fmt12(f.time)} · ${sizeStr(f.size)} · ${f.owner}` })));
+    b.addEventListener('click', () => select(i));
+    list.append(b);
+    return b;
+  });
+  const folderEls = {};
+  const folders = h('div', { class: 'folders', style: `grid-template-columns:repeat(${S.folders.length > 4 ? 3 : 2},1fr)` },
+    S.folders.map(name => {
+      counts[name] = 0;
+      const cnt = h('span', { class: 'cnt', text: '0 files' });
+      const b = h('button', { class: 'btn folder' }, Icons.el(FICON[name]), h('span', { text: name }), cnt);
+      b.cnt = cnt;
+      b.addEventListener('click', () => drop(name));
+      folderEls[name] = b;
+      return b;
+    }));
+  root.append(h('div', { class: 'rules' }, h('div', { class: 'rh', text: 'RULES · check top to bottom, first match wins' }), rulesEl), leftEl, list, folders);
+  const updLeft = () => { leftEl.textContent = `${left} file${left === 1 ? '' : 's'} left to sort`; };
+  updLeft();
+
+  function select(i) {
+    if (dead || cards[i].classList.contains('gone')) return;
+    if (sel >= 0) { cards[sel].classList.remove('sel'); cards[sel].setAttribute('aria-pressed', 'false'); }
+    if (sel === i) { sel = -1; Object.values(folderEls).forEach(f => f.classList.remove('armed')); return; }
+    sel = i; cards[i].classList.add('sel'); cards[i].setAttribute('aria-pressed', 'true');
+    Object.values(folderEls).forEach(f => f.classList.add('armed'));
+    Sound.sfx.select(); ctx.emit('select');
+  }
+  function drop(name) {
+    if (dead) return;
+    if (sel < 0) { FX.toast('Tap a file first, then its folder.'); Sound.sfx.click(); return; }
+    const f = files[sel];
+    if (S.rules[f.rule].to === name) {
+      const c = cards[sel];
+      c.classList.remove('sel'); c.classList.add('gone'); c.disabled = true;
+      setTimeout(() => { c.style.display = 'none'; }, 260);
+      counts[name]++; folderEls[name].cnt.textContent = counts[name] + (counts[name] === 1 ? ' file' : ' files');
+      sel = -1; left--; updLeft();
+      Object.values(folderEls).forEach(x => x.classList.remove('armed'));
+      Sound.sfx.ok(); ctx.emit('placed');
+      if (left === 0) { dead = true; setTimeout(() => ctx.solve({}), 300); }
+    } else {
+      ctx.mistake(`Wrong folder for ${f.name}.`);
+    }
+  }
+  return {
+    hint() {
+      let i = sel >= 0 ? sel : cards.findIndex(c => !c.classList.contains('gone'));
+      if (i < 0) return null;
+      if (sel !== i) select(i);
+      const f = files[i];
+      const li = rulesEl.children[f.rule];
+      li.classList.add('flash'); setTimeout(() => li.classList.remove('flash'), 2500);
+      const fe = folderEls[S.rules[f.rule].to];
+      fe.classList.remove('hot'); void fe.offsetWidth; fe.classList.add('hot');
+      return `${f.name} matches rule ${f.rule + 1}: "${S.rules[f.rule].t}"`;
+    },
+    destroy() { dead = true; },
+    coach: { rules: () => root.querySelector('.rules'), file: () => root.querySelector('.filecard:not(.gone)'), folders: () => folders }
+  };
+};
+
+/* ---------------- 3. DIAL-UP DECODER (Simon) ---------------- */
+Puzzles.dialup = function (root, ctx) {
+  const r = ctx.rng, tier = ctx.tier;
+  const C = {
+    1: { pads: 4, cols: 2, start: 3, end: 5, speed: 650, rev: false },
+    2: { pads: 6, cols: 3, start: 3, end: 6, speed: 450, rev: false },
+    3: { pads: 9, cols: 3, start: 4, end: 6, speed: 470, rev: true }
+  }[tier];
+  const seq = [];
+  for (let i = 0; i < C.end; i++) {
+    let p;
+    do { p = r.int(0, C.pads - 1); } while (i >= 2 && p === seq[i - 1] && p === seq[i - 2]);
+    seq.push(p);
+  }
+  let len = C.start, idx = 0, playing = true, dead = false, done = false;
+  const timers = [];
+  let waveIv = 0;
+  const later = (fn, ms) => { const t = setTimeout(() => { if (!dead) fn(); }, ms); timers.push(t); return t; };
+
+  const status = h('span', { text: 'DIALING 555-0196...' });
+  const leds = h('div', { class: 'leds', 'aria-hidden': 'true' });
+  const wave = h('div', { class: 'wave', 'aria-hidden': 'true' });
+  const bars = [];
+  for (let i = 0; i < 22; i++) { const b = h('i'); bars.push(b); wave.append(b); }
+  const padsEl = h('div', { class: 'pads locked', style: `grid-template-columns:repeat(${C.cols},1fr);max-width:${C.cols === 2 ? 300 : 400}px` });
+  const LBL = ['697/1209', '697/1336', '697/1477', '770/1209', '770/1336', '770/1477', '852/1209', '852/1336', '852/1477'];
+  const pads = [];
+  for (let i = 0; i < C.pads; i++) {
+    const b = h('button', { class: 'btn pad', 'aria-label': 'Tone ' + (i + 1) }, String(i + 1), h('small', { text: LBL[i] + 'Hz' }));
+    b.addEventListener('click', () => input(i));
+    pads.push(b); padsEl.append(b);
+  }
+  const replay = h('button', { class: 'btn', text: 'REPLAY' });
+  replay.addEventListener('click', () => {
+    if (dead || done || playing) return;
+    Sound.sfx.click(); idx = 0; updLeds(); play();
+  });
+  const roundEl = h('span', { class: 'small' });
+  root.append(h('div', { class: 'modem-status' }, status, leds), wave, padsEl,
+    h('div', { class: 'dial-ctl' }, replay), h('p', { class: 'small muted center', style: 'margin-top:8px' }, roundEl));
+
+  function setStatus(t) { status.textContent = t; }
+  function updLeds() {
+    leds.textContent = '';
+    for (let i = 0; i < len; i++) leds.append(h('i', { class: 'led' + (i < idx ? ' on' : '') }));
+    roundEl.textContent = `Sequence ${len - C.start + 1} of ${C.end - C.start + 1} · ${len} tones` + (C.rev ? ' · enter REVERSED' : '');
+  }
+  function waveOn() {
+    if (Settings.reduced()) { bars.forEach((b, i) => { b.style.height = (i % 2 ? 60 : 30) + '%'; }); return; }
+    clearInterval(waveIv);
+    const jig = () => bars.forEach(b => { b.style.height = (10 + Math.random() * 85) + '%'; });
+    jig(); waveIv = setInterval(jig, 70);
+  }
+  function waveOff() { clearInterval(waveIv); bars.forEach(b => { b.style.height = '2px'; }); }
+  function flash(p, dur) {
+    const b = pads[p];
+    b.classList.add('lit'); Sound.sfx.dtmf(p, dur / 1000); waveOn();
+    later(() => { b.classList.remove('lit'); waveOff(); }, dur);
+  }
+  function play() {
+    playing = true; idx = 0; updLeds();
+    padsEl.classList.add('locked'); setStatus('RECEIVING...');
+    for (let i = 0; i < len; i++) later(() => flash(seq[i], Math.round(C.speed * 0.62)), 350 + i * C.speed);
+    later(() => {
+      playing = false; padsEl.classList.remove('locked');
+      setStatus(C.rev ? 'YOUR TURN · REVERSED!' : 'YOUR TURN');
+    }, 350 + len * C.speed);
+  }
+  function input(p) {
+    if (dead || done || playing) return;
+    flash(p, 180);
+    const exp = C.rev ? seq[len - 1 - idx] : seq[idx];
+    if (p === exp) {
+      idx++; updLeds();
+      if (idx === len) {
+        if (len >= C.end) {
+          done = true; setStatus('CONNECT 28800'); Sound.sfx.modem();
+          later(() => ctx.solve({}), 1000);
+        } else {
+          playing = true; setStatus('HANDSHAKE OK'); later(() => Sound.sfx.ok(), 200);
+          len++; later(play, 900);
+        }
+      }
+    } else {
+      playing = true; setStatus('NO CARRIER');
+      ctx.mistake('NO CARRIER - wrong tone.');
+      if (dead) return;
+      later(play, 1200);
+    }
+  }
+  updLeds();
+  later(play, 900);
+  return {
+    hint() {
+      if (playing || done) return null;
+      const exp = C.rev ? seq[len - 1 - idx] : seq[idx];
+      const b = pads[exp];
+      b.classList.add('hintme'); later(() => b.classList.remove('hintme'), 1800);
+      return `Next tone is pad ${exp + 1} (outlined).`;
+    },
+    destroy() { dead = true; timers.forEach(clearTimeout); clearInterval(waveIv); }
+  };
+};
+
+/* ---------------- 4. TERMINAL ---------------- */
+Puzzles.terminal = function (root, ctx) {
+  const r = ctx.rng, tier = ctx.tier;
+  const WORDS = ['WALRUS', 'BADGER', 'MODEM', 'ZORK', 'TURBO', 'PIXEL', 'DISCO', 'FERRET', 'COBALT', 'RADAR', 'TOFU', 'GOPHER', 'NOVA', 'JAZZ', 'WOMBAT', 'PLAID'];
+  const mkKey = () => r.pick(WORDS) + r.int(10, 99);
+  const dir = (name, parent) => ({ name, parent, dirs: {}, files: {} });
+  const mkd = (p, name) => (p.dirs[name] = dir(name, p));
+  const file = (d, name, text, o = {}) => { d.files[name] = Object.assign({ name, text, size: r.int(1, 60) * 512 }, o); };
+  const tk = s => '[[' + s + ']]';
+  const fsRoot = dir('', null);
+  const D = r.shuffle(['DOCS', 'PAYROLL', 'GAMES', 'TEMP', 'MEMOS', 'BACKUP', 'UTILS', 'ARCHIVE']).slice(0, 4).map(n => mkd(fsRoot, n));
+  file(fsRoot, 'AUTOEXEC.BAT', '@ECHO OFF\nPROMPT $P$G\nPATH C:\\DPOS;C:\\UTILS\nWIN');
+  file(fsRoot, 'CONFIG.SYS', 'FILES=40\nBUFFERS=20\nDEVICE=HIMEM.SYS\nREM do not touch - phil');
+  const FLAVOR = [['TODO.TXT', '1. Fix printer\n2. Fix printer again\n3. Lunch'], ['LUNCH.TXT', 'MON: pizza\nTUE: pizza\nWED: "salad" (pizza)'],
+    ['SCORES.TXT', 'MINESWEEPER (EXPERT)\nPHIL ..... 141s\nGARY ..... 999s (?)'], ['DOOM.EXE', null], ['QUOTE.TXT', '"640K ought to be enough for anybody."'],
+    ['BUDGET.XLS', '#### #### #### (column too narrow)'], ['PRINTER.LOG', 'PC LOAD LETTER\nPC LOAD LETTER\nPC LOAD LETTER'], ['FAX.TXT', 'Fax from corporate: pages 2-9 missing.']];
+  r.shuffle(FLAVOR).slice(0, 5).forEach((f, i) => file(D[(i + 1) % 4], f[0], f[1], f[1] === null ? { exe: true } : {}));
+  const target = 'OWL' + r.int(10, 99) + '.ENC';
+  let key, plan;
+  if (tier === 1) {
+    const A = D[0]; key = mkKey();
+    file(A, target, '', { enc: true });
+    file(A, 'STICKY.TXT', `Phil - the archive key is ${tk(key)}. Don't lose it again.`);
+    plan = ['Type DIR to list files, then CD into each folder.', `The key is written in C:\\${A.name}\\STICKY.TXT.`, `Go to C:\\${A.name} and run: DECRYPT ${target} ${key}`];
+  } else if (tier === 2) {
+    const A = D[0], B = D[1]; key = mkKey();
+    file(A, target, '', { enc: true });
+    file(A, 'README.TXT', `Moved the key to ${B.name}. Hid it, too.\n(Hidden files only show with DIR /A)`);
+    file(B, 'KEY.SYS', `archive key: ${tk(key)}`, { hidden: true });
+    plan = [`Read C:\\${A.name}\\README.TXT.`, `CD ${B.name}, then DIR /A shows the hidden KEY.SYS.`, `Go to C:\\${A.name} and run: DECRYPT ${target} ${key}`];
+  } else {
+    const A = D[0], B = D[1], Cd = D[2];
+    const sub = mkd(A, 'SECURE'), old = mkd(Cd, 'OLD');
+    const w = r.pick(WORDS), n = String(r.int(10, 99));
+    key = w + n;
+    let decoy; do { decoy = mkKey(); } while (decoy === key);
+    file(sub, target, '', { enc: true });
+    file(fsRoot, 'PHIL.TXT', `Note to self:\n- Archive lives in ${A.name}\\SECURE\n- Key is split in two\n- PART 1 is hidden in ${B.name}\n- PART 2 is in ${Cd.name}\\OLD\n- Key = PART 1 then PART 2, no space`);
+    file(B, 'PART1.SYS', `key part 1 of 2: ${tk(w)}`, { hidden: true });
+    file(old, 'PART2.TXT', `key part 2 of 2: ${tk(n)}`);
+    file(Cd, 'OLDKEY.TXT', `archive key (EXPIRED 1995): ${tk(decoy)}`);
+    plan = ['Read C:\\PHIL.TXT first (OPEN PHIL.TXT at C:\\).', `PART 1 is hidden: CD ${B.name}, then DIR /A, then OPEN PART1.SYS.`, `PART 2: CD ${Cd.name}, CD OLD, OPEN PART2.TXT. Ignore OLDKEY.TXT.`, `CD \\${A.name}\\SECURE then DECRYPT ${target} ${key}`];
+  }
+
+  let cwd = fsRoot, dead = false, hintN = 0;
+  const clip = [], revealed = new Set();
+  const timers = [];
+  const later = (fn, ms) => { timers.push(setTimeout(() => { if (!dead) fn(); }, ms)); };
+  const term = h('div', { class: 'term', role: 'log', 'aria-live': 'polite' });
+  const input = h('input', { type: 'text', autocomplete: 'off', autocorrect: 'off', autocapitalize: 'characters', spellcheck: 'false', enterkeyhint: 'go', 'aria-label': 'Command', placeholder: 'type a command' });
+  const promptEl = h('span', { class: 'pr' });
+  const form = h('form', { class: 'term-input' }, promptEl, input, h('button', { class: 'btn primary', type: 'submit', text: 'RUN' }));
+  const chips = h('div', { class: 'chips' });
+  root.append(term, form, chips);
+  form.addEventListener('submit', e => { e.preventDefault(); const v = input.value; input.value = ''; run(v); });
+  input.addEventListener('input', () => Sound.sfx.key());
+
+  const pathOf = d => { const p = []; while (d && d.parent) { p.unshift(d.name); d = d.parent; } return 'C:\\' + p.join('\\'); };
+  function out(text, cls) {
+    const ln = h('div', { class: 'ln' + (cls ? ' ' + cls : '') });
+    String(text).split(/(\[\[[^\]]+\]\])/).forEach(part => {
+      const m = part.match(/^\[\[([^\]]+)\]\]$/);
+      if (m) {
+        ln.append(h('span', { class: 'key', text: m[1] }));
+        if (!clip.includes(m[1])) { clip.push(m[1]); FX.toast('Copied to clipboard: ' + m[1]); }
+      } else if (part) ln.append(part);
+    });
+    term.append(ln);
+    while (term.childNodes.length > 240) term.firstChild.remove();
+    term.scrollTop = term.scrollHeight;
+  }
+  function findFile(name) {
+    const f = cwd.files[name];
+    if (f) return f;
+    const cands = Object.values(cwd.files).filter(x => x.name.split('.')[0] === name);
+    return cands.length === 1 ? cands[0] : null;
+  }
+  function resolveDir(arg) {
+    let d = /^[\\/]/.test(arg) ? fsRoot : cwd;
+    if (/^C:/.test(arg)) { d = fsRoot; arg = arg.slice(2); }
+    for (const s of arg.split(/[\\/]+/).filter(Boolean)) {
+      if (s === '..') d = d.parent || d;
+      else if (s !== '.') { d = d.dirs[s]; if (!d) return null; }
+    }
+    return d;
+  }
+  function run(raw) {
+    if (dead) return;
+    let line = String(raw || '').trim().toUpperCase();
+    if (!line) return;
+    out(pathOf(cwd) + '>' + line, 'cmd');
+    if (/^CD(\.\.|\\)/.test(line)) line = 'CD ' + line.slice(2);
+    const [cmd, ...args] = line.split(/\s+/);
+    switch (cmd) {
+      case 'HELP': case '?':
+        out('COMMANDS:\n DIR [/A]        list files (/A = include hidden)\n CD <dir>        change directory (CD .. goes up)\n OPEN <file>     show a file (also TYPE)\n DECRYPT <f> <k> decrypt file f with key k\n CLS             clear the screen');
+        Ach.unlock('manual'); break;
+      case 'DIR': {
+        const all = args[0] === '/A';
+        if (all) revealed.add(cwd);
+        out(' Directory of ' + pathOf(cwd), 'dim');
+        Object.keys(cwd.dirs).forEach(n => out(' <DIR>   ' + n));
+        const fl = Object.values(cwd.files).filter(f => all || !f.hidden);
+        fl.forEach(f => out(' ' + f.name.padEnd(13) + String(f.size).padStart(6) + (f.hidden ? '  (H)' : '') + (f.enc ? '  [ENCRYPTED]' : '')));
+        out(` ${fl.length} file(s)  ${Object.keys(cwd.dirs).length} dir(s)` + (!all && Object.values(cwd.files).some(f => f.hidden) ? '' : ''), 'dim');
+        break;
+      }
+      case 'CD': case 'CHDIR': {
+        if (!args[0]) { out(pathOf(cwd)); break; }
+        const d = resolveDir(args.join(''));
+        if (!d) out('Invalid directory');
+        else { cwd = d; Sound.sfx.click(); }
+        break;
+      }
+      case 'OPEN': case 'TYPE': case 'READ': case 'CAT': case 'EDIT': {
+        if (!args[0]) { out('Usage: OPEN <file>'); break; }
+        const f = findFile(args[0]);
+        if (!f) { out('File not found - ' + args[0]); break; }
+        if (f.enc) { out('ÿ╬▒Ä∩≈¥█▌ ... (encrypted)\nUse: DECRYPT ' + f.name + ' <key>', 'dim'); break; }
+        if (f.exe) { out('This program cannot be run during work hours.'); break; }
+        out(f.text); Sound.sfx.open();
+        break;
+      }
+      case 'DECRYPT': {
+        if (!args[0]) { out('Usage: DECRYPT <file> <key>'); break; }
+        const f = findFile(args[0]);
+        if (!f) { out('File not found - ' + args[0] + '  (are you in the right directory?)'); break; }
+        if (!f.enc) { out('That file is not encrypted.'); break; }
+        const k = args.slice(1).join('');
+        if (!k) { out('Usage: DECRYPT ' + f.name + ' <key>'); break; }
+        if (k === key) {
+          dead = true;
+          out('Decrypting ' + f.name + ' ......... OK', 'dim');
+          out('-----BEGIN NIGHTOWL LOG-----\n' + (ctx.clue || 'no evidence in this one') + '\n-----END-----');
+          Sound.sfx.ok();
+          setTimeout(() => ctx.solve({}), 700);
+          return;
+        }
+        out('ACCESS DENIED - bad key.');
+        ctx.mistake('ACCESS DENIED - bad decryption key.');
+        if (dead) return;
+        break;
+      }
+      case 'CLS': term.textContent = ''; break;
+      case 'VER': out('DPOS Version 6.22 (Dunmore & Pike Operating System)'); break;
+      case 'EXIT': out('There is no exit. It\'s the night shift.'); break;
+      case 'WIN': out('Windows 95 not found. (Budget cuts.)'); break;
+      case 'SOL': out('SOL.EXE was moved to the Recycle Bin by R. Pike.'); break;
+      case 'XYZZY': out('Nothing happens.'); break;
+      case 'WHOAMI': out('TEMP0451 (night shift). Rank: whatever Pike says.'); break;
+      case 'DEL': case 'FORMAT': case 'DELTREE': out('Nice try. Permission denied.'); break;
+      default: out('Bad command or file name');
+    }
+    refresh();
+  }
+  function refresh() {
+    promptEl.textContent = pathOf(cwd) + '>';
+    chips.textContent = '';
+    const add = (label, fn, cls) => {
+      const b = h('button', { class: 'btn chip' + (cls ? ' ' + cls : ''), type: 'button', text: label });
+      b.addEventListener('click', () => { if (dead) return; Sound.sfx.key(); fn(); });
+      chips.append(b);
+    };
+    add('HELP', () => run('HELP'));
+    add('DIR', () => run('DIR'));
+    if (tier > 1) add('DIR /A', () => run('DIR /A'));
+    if (cwd !== fsRoot) add('CD ..', () => run('CD ..'));
+    Object.keys(cwd.dirs).forEach(n => add('CD ' + n, () => run('CD ' + n)));
+    Object.values(cwd.files).filter(f => !f.hidden || revealed.has(cwd)).forEach(f => {
+      if (f.enc) add('DECRYPT ' + f.name, () => { input.value = 'DECRYPT ' + f.name + ' '; });
+      else add('OPEN ' + f.name, () => run('OPEN ' + f.name));
+    });
+    if (clip.length) {
+      chips.append(h('div', { class: 'lbl', text: 'CLIPBOARD · tap to paste into the command line:' }));
+      clip.forEach(k => add(k, () => { input.value = (input.value.replace(/\s*$/, ' ') + k).replace(/^\s+/, ''); }, 'clip'));
+      add('CLEAR LINE', () => { input.value = ''; });
+    }
+  }
+  out('Dunmore & Pike DPOS 6.22  (C)1996', 'dim');
+  out('Ticket: recover the encrypted NIGHTOWL archive.\nType HELP, or tap the command chips below.', 'dim');
+  refresh();
+  return {
+    hint() { const m = plan[Math.min(hintN, plan.length - 1)]; hintN++; return m; },
+    destroy() { dead = true; timers.forEach(clearTimeout); input.blur(); }
+  };
+};
+
+/* ---------------- 5. FIREWALL (Minesweeper) ---------------- */
+Puzzles.firewall = function (root, ctx) {
+  const r = ctx.rng, tier = ctx.tier;
+  const C = {
+    1: { w: 6, h: 6, n: 5, plus: false, heavy: 0 },
+    2: { w: 7, h: 7, n: 7, plus: true, heavy: 0 },
+    3: { w: 8, h: 8, n: 10, plus: false, heavy: 3 }
+  }[tier];
+  const N = C.w * C.h;
+  const trap = new Uint8Array(N), open = new Uint8Array(N), flag = new Uint8Array(N);
+  let gen = false, dead = false, done = false, flagMode = false, breaches = 0;
+  const around = (i, plus) => {
+    const x = i % C.w, y = (i / C.w) | 0, out = [];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      if (plus && dx && dy) continue;
+      const nx = x + dx, ny = y + dy;
+      if (nx >= 0 && ny >= 0 && nx < C.w && ny < C.h) out.push(ny * C.w + nx);
+    }
+    return out;
+  };
+  const NB = [...Array(N).keys()].map(i => around(i, C.plus));
+  const val = i => NB[i].reduce((s, j) => s + trap[j], 0);
+  function generate(first) {
+    const banned = new Set([first, ...around(first, false)]);
+    const cand = [...Array(N).keys()].filter(i => !banned.has(i));
+    r.shuffle(cand).slice(0, C.n).forEach((p, k) => { trap[p] = k < C.heavy ? 2 : 1; });
+    gen = true;
+  }
+  const countEl = h('span', { class: 'fw-count' });
+  const modeBtn = h('button', { class: 'btn small mode-btn', text: 'MODE: PROBE' });
+  modeBtn.addEventListener('click', () => {
+    flagMode = !flagMode; Sound.sfx.click();
+    modeBtn.textContent = flagMode ? 'MODE: FLAG' : 'MODE: PROBE';
+    modeBtn.classList.toggle('on', flagMode);
+  });
+  const grid = h('div', { class: 'fw-grid', style: `grid-template-columns:repeat(${C.w},1fr)`, role: 'grid' });
+  const cells = [];
+  for (let i = 0; i < N; i++) {
+    const b = h('button', { class: 'cell', 'aria-label': `Port ${i + 1}` });
+    let lpT = 0, lp = false;
+    b.addEventListener('pointerdown', e => {
+      if (e.button > 0) return;
+      lp = false; clearTimeout(lpT);
+      lpT = setTimeout(() => { if (!open[i] && !dead && !done) { lp = true; toggleFlag(i); if (navigator.vibrate) navigator.vibrate(12); } }, 430);
+    });
+    const cancel = () => clearTimeout(lpT);
+    b.addEventListener('pointerup', cancel); b.addEventListener('pointerleave', cancel); b.addEventListener('pointercancel', cancel);
+    b.addEventListener('contextmenu', e => { e.preventDefault(); clearTimeout(lpT); if (!lp && !open[i]) { lp = true; toggleFlag(i); } });
+    b.addEventListener('click', () => {
+      if (lp) { lp = false; return; }
+      if (dead || done) return;
+      if (open[i]) { chord(i); return; }
+      if (flagMode) toggleFlag(i); else reveal(i);
+    });
+    cells.push(b); grid.append(b);
+  }
+  root.append(h('div', { class: 'fw-bar' }, countEl, modeBtn), grid,
+    h('p', { class: 'tiny muted center', style: 'margin:8px 0 0', text: 'Long-press (or FLAG mode) to flag a trap. Tap an open number to clear around it.' + (C.heavy ? ' Tap a flag again for a HEAVY (x2) flag.' : '') }));
+
+  function paint(i) {
+    const b = cells[i];
+    let cls = 'cell', txt = '';
+    if (open[i]) {
+      if (trap[i]) cls += ' open trap' + (trap[i] === 2 ? ' heavy' : '');
+      else { const v = val(i); cls += ' open n' + Math.min(v, 8); txt = v ? String(v) : ''; }
+    } else if (flag[i]) cls += ' flag' + (flag[i] === 2 ? ' flag2' : '');
+    b.className = cls; b.textContent = txt;
+    if (!open[i] && flag[i] === 2) b.append(h('span', { class: 'f2', text: 'x2' }));
+    b.setAttribute('aria-label', open[i] ? (trap[i] ? 'trap' : 'safe, ' + val(i)) : flag[i] ? 'flagged' : 'unknown port');
+  }
+  function updCount() {
+    let flags = 0;
+    for (let i = 0; i < N; i++) if (flag[i] && !open[i]) flags++;
+    countEl.textContent = `TRAPS ${C.n}${C.heavy ? ` (${C.heavy} HEAVY)` : ''} · FLAGS ${flags}` + (breaches ? ` · BREACHES ${breaches}` : '');
+  }
+  function toggleFlag(i) {
+    if (open[i] || dead || done) return;
+    flag[i] = C.heavy ? (flag[i] + 1) % 3 : flag[i] ? 0 : 1;
+    Sound.sfx.flag(); paint(i); updCount();
+  }
+  function checkWin() {
+    let opened = 0;
+    for (let i = 0; i < N; i++) if (open[i] && !trap[i]) opened++;
+    if (opened === N - C.n) {
+      done = true;
+      for (let i = 0; i < N; i++) if (trap[i] && !open[i]) { flag[i] = trap[i]; paint(i); }
+      Sound.sfx.win();
+      setTimeout(() => { if (!dead) ctx.solve({ breaches }); }, 500);
+    }
+  }
+  function reveal(i) {
+    if (dead || done || open[i] || flag[i]) return;
+    if (!gen) generate(i);
+    if (trap[i]) {
+      open[i] = 1; breaches++; paint(i); updCount(); Sound.sfx.boom();
+      ctx.mistake('PORT BREACHED - that one was trapped.');
+      if (!dead) checkWin();
+      return;
+    }
+    const stack = [i];
+    while (stack.length) {
+      const j = stack.pop();
+      if (open[j] || flag[j] || trap[j]) continue;
+      open[j] = 1; paint(j);
+      if (val(j) === 0) NB[j].forEach(k => { if (!open[k]) stack.push(k); });
+    }
+    Sound.sfx.click(); checkWin();
+  }
+  function chord(i) {
+    const v = val(i);
+    if (!v) return;
+    let f = 0;
+    NB[i].forEach(j => { if (open[j] && trap[j]) f += trap[j]; else if (!open[j] && flag[j]) f += flag[j]; });
+    if (f !== v) return;
+    NB[i].forEach(j => { if (!open[j] && !flag[j]) reveal(j); });
+  }
+  updCount();
+  return {
+    hint() {
+      if (!gen) return { text: 'The first probe is always safe. Tap any port to start the scan.', free: true };
+      const hidden = [...Array(N).keys()].filter(i => !open[i] && !trap[i]);
+      if (!hidden.length) return null;
+      const edge = hidden.filter(i => around(i, false).some(j => open[j] && !trap[j]));
+      const pickFrom = edge.length ? edge : hidden;
+      const p = r.pick(pickFrom);
+      if (flag[p]) { flag[p] = 0; }
+      reveal(p);
+      cells[p].classList.add('hintme');
+      return `Port at row ${((p / C.w) | 0) + 1}, column ${(p % C.w) + 1} is safe - opened it for you.`;
+    },
+    destroy() { dead = true; }
+  };
+};
+
+/* ============================== Taskbar ============================== */
+const Taskbar = (() => {
+  let clockFn = null, menuEl = null;
+  function init() {
+    const start = $('#tb-start');
+    start.append(Icons.el('start'), h('span', { text: 'Start' }));
+    start.addEventListener('click', () => { Sound.sfx.click(); menuEl ? closeMenu() : openMenu(); });
+    $('#tb-mute').addEventListener('click', () => {
+      Settings.set('mute', !Settings.get().mute);
+      if (!Settings.get().mute) Sound.sfx.ok();
+      FX.toast(Settings.get().mute ? 'Sound off' : 'Sound on', { icon: Settings.get().mute ? 'mute' : 'speaker', ms: 1200 });
+    });
+    $('#tb-floppy').innerHTML = Icons.svg('floppy');
+    $('#tb-clock').addEventListener('click', () => Eggs.clockTap());
+    refreshMute();
+    setInterval(tick, 1000); tick();
+  }
+  function refreshMute() {
+    const b = $('#tb-mute'); if (!b) return;
+    const m = Settings.get().mute;
+    b.innerHTML = Icons.svg(m ? 'mute' : 'speaker');
+    b.setAttribute('aria-label', m ? 'Sound is off. Turn sound on' : 'Sound is on. Turn sound off');
+    b.setAttribute('aria-pressed', m ? 'true' : 'false');
+  }
+  function tick() {
+    let m;
+    if (clockFn) { try { m = clockFn(); } catch (e) { m = null; } }
+    if (m == null) { const d = new Date(); m = d.getHours() * 60 + d.getMinutes(); }
+    $('#tb-clock').textContent = U.fmt12(m);
+  }
+  function closeMenu() { if (menuEl) { menuEl.remove(); menuEl = null; } }
+  function openMenu() {
+    if (Modal.isOpen()) return;
+    const inShift = Screen.name === 'ticket';
+    const item = (icon, label, fn) => h('li', {}, h('button', { onclick: () => { closeMenu(); Sound.sfx.click(); fn(); } }, Icons.el(icon), label));
+    const list = h('ul', { role: 'menu' },
+      item('computer', inShift ? 'Leave ticket' : 'Desktop', () => inShift ? Game.leaveTicket() : Desktop.show()),
+      Store.d.campaign ? item('case', 'Case File', () => CaseFile.open()) : null,
+      Game.inboxAvailable() ? item('mail', 'Inbox', () => Game.openInbox()) : null,
+      item('trophy', 'Awards', () => Desktop.awards()),
+      item('gear', 'Control Panel', () => Desktop.control()),
+      item('book', 'Help', () => Desktop.manual()),
+      h('hr'),
+      item(Settings.get().mute ? 'speaker' : 'mute', Settings.get().mute ? 'Sound on' : 'Sound off', () => $('#tb-mute').click()),
+      item('power', 'Shut Down...', () => Desktop.shutdown()));
+    menuEl = h('div', {}, h('div', { class: 'menu-scrim', onclick: closeMenu }),
+      h('div', { id: 'startmenu' }, h('div', { class: 'side', html: 'NIGHT<em>SHIFT</em> 96' }), list));
+    document.body.append(menuEl);
+  }
+  return {
+    init, refreshMute, closeMenu,
+    setTitle: t => { $('#tb-title').textContent = t; },
+    setClock: fn => { clockFn = fn; tick(); }
+  };
+})();
+
+/* ============================== Coach (guided first ticket) ============================== */
+const Coach = (() => {
+  let steps = null, i = 0, layer = null, ring = null, bubble = null, onDone = null, iv = 0;
+  function start(list, done) {
+    end(true);
+    steps = list; i = 0; onDone = done;
+    ring = h('div', { class: 'coach-ring' });
+    bubble = h('div', { class: 'coach-bubble', role: 'dialog', 'aria-live': 'polite' });
+    layer = h('div', { id: 'coach' }, ring, bubble);
+    document.body.append(layer);
+    show();
+    iv = setInterval(position, 250);
+    window.addEventListener('resize', position);
+    $('#screen').addEventListener('scroll', position, { passive: true });
+  }
+  function show() {
+    const s = steps[i];
+    bubble.textContent = '';
+    const btns = h('div', { class: 'row' });
+    if (!s.wait) btns.append(h('button', { class: 'btn primary small', text: s.btn || 'NEXT', onclick: () => { Sound.sfx.click(); next(); } }));
+    btns.append(h('button', { class: 'btn small', text: 'SKIP TOUR', onclick: () => { Sound.sfx.click(); end(); } }));
+    bubble.append(Icons.el('floppy'), h('div', {}, h('div', { class: 'txt', text: s.text }), btns));
+    const t = s.target && s.target();
+    if (t) t.scrollIntoView({ block: 'center', behavior: Settings.reduced() ? 'auto' : 'smooth' });
+    position();
+  }
+  function position() {
+    if (!steps) return;
+    const t = steps[i].target && steps[i].target();
+    if (!t || !t.isConnected) { ring.style.display = 'none'; bubble.style.top = '30%'; bubble.style.bottom = ''; return; }
+    const rc = t.getBoundingClientRect(), pad = 5;
+    Object.assign(ring.style, { display: 'block', left: (rc.left - pad) + 'px', top: (rc.top - pad) + 'px', width: (rc.width + pad * 2) + 'px', height: (rc.height + pad * 2) + 'px' });
+    const below = rc.top + rc.height / 2 < innerHeight / 2;
+    if (below) { bubble.style.top = Math.min(innerHeight - 180, rc.bottom + 14) + 'px'; bubble.style.bottom = ''; }
+    else { bubble.style.bottom = Math.min(innerHeight - 180, innerHeight - rc.top + 14) + 'px'; bubble.style.top = ''; }
+  }
+  function event(name) { if (steps && steps[i] && steps[i].wait === name) setTimeout(next, 250); }
+  function next() { if (!steps) return; i++; if (i >= steps.length) end(); else show(); }
+  /** silent=true: torn down by navigation; still calls onDone so state is consistent. */
+  function end(silent) {
+    if (!steps && !layer) return;
+    clearInterval(iv);
+    window.removeEventListener('resize', position);
+    const s = $('#screen'); if (s) s.removeEventListener('scroll', position);
+    if (layer) layer.remove();
+    layer = null; steps = null;
+    const f = onDone; onDone = null;
+    if (f) f(silent);
+  }
+  return { start, event, end, active: () => !!steps };
+})();
+
+/* ============================== Game ============================== */
+const TYPES = ['password', 'sorter', 'dialup', 'terminal', 'firewall'];
+const TYPE_INFO = {
+  password: { name: 'PASSWORD CRACKER', exe: 'CRACK.EXE', icon: 'lock', intro: 'Guess the password. Inspect the sticky note, calendar and photo for clues.' },
+  sorter: { name: 'FILE SORTER', exe: 'SORT.EXE', icon: 'folder', intro: 'Tap a file, then its folder. Rules go top to bottom.' },
+  dialup: { name: 'DIAL-UP DECODER', exe: 'MODEM.EXE', icon: 'modem', intro: 'Watch the lights, hear the tones, repeat them. Sequences grow.' },
+  terminal: { name: 'TERMINAL', exe: 'COMMAND.COM', icon: 'terminal', intro: 'Find the encrypted file and its key. Type, or tap the chips.' },
+  firewall: { name: 'FIREWALL', exe: 'FIREWALL.EXE', icon: 'wall', intro: 'Open safe ports. Numbers count trapped neighbors. Flag the traps.' }
+};
+const TIERS = { 1: [1, 1, 1, 1, 1], 2: [1, 1, 2, 2, 2], 3: [2, 2, 2, 2, 2], 4: [2, 2, 3, 3, 3], 5: [3, 3, 3, 3, 3] };
+const TIME = { password: [180, 170, 160], sorter: [120, 120, 120], dialup: [150, 140, 140], terminal: [180, 170, 180], firewall: [150, 170, 200] };
+const RANKS = [['Intern', 0], ['Temp', 1000], ['Tech', 3000], ['Admin', 5500], ['Sysadmin', 8000], ['Root', 11000]];
+const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'];
+const rankIdx = s => { let i = 0; RANKS.forEach((r, k) => { if (s >= r[1]) i = k; }); return i; };
+const REQ = {
+  password: ['{n}: "Locked out of my account. Again."', '{n}: "Forgot my password. It had numbers in it?"', '{n}: "Pike needs a file from my account. I\'m at home. Good luck!"'],
+  sorter: ['Pike: "Clean up the shared drive. Follow the rules."', 'Linda: "The S: drive is a disaster. Sort it."', 'Auditors: "Organize these files per policy before Friday."'],
+  dialup: ['Marty: "The modem in the closet is screaming. Decode it."', 'Phil (auto-reply): "Remote line needs a manual handshake."', 'Security: "Someone dialed in at 2 AM. Replay the tones."'],
+  terminal: ['Phil (auto-reply): "The archive server needs a look."', 'Pike: "There\'s an encrypted file on the server. Open it."', 'Gary: "my computer just says C:\\> what do i do"'],
+  firewall: ['Security: "Port scan detected. Lock down the firewall."', 'Pike: "Something is knocking on our network. Find the bad ports."', 'Dee: "The fax machine keeps beeping. Firewall thing?"']
+};
+
+const Game = (() => {
+  let run = null, T = null, mystery = null, ctxSeq = 0;
+  const isCamp = () => !!run && run.mode === 'campaign';
+  const freshStats = () => ({ closed: 0, failed: 0, mistakes: 0, hints: 0, hintCost: 0, strikes: 0, speed: 0, acc: 0, nohint: 0, base: 0 });
+  function save() { if (isCamp()) Store.d.campaign = run; Store.save(); }
+  function getMystery() {
+    if (!mystery || mystery.seed !== run.seed) { mystery = Case.build(run.seed); mystery.seed = run.seed; }
+    return mystery;
+  }
+  const tierOf = () => run.mode === 'daily' ? run.tiers[run.ticket] : TIERS[run.day][run.ticket];
+  const ticketNo = () => 4400 + (U.hashStr(run.seed + ':' + run.day + ':' + run.ticket) % 5000);
+  function clueText(type) {
+    if (!isCamp()) return null;
+    const c = getMystery().clues[(run.day - 1) * 5 + run.ticket];
+    return c ? Case.SRC[type] + ' ' + c.text : null;
+  }
+
+  /* ---------- campaign lifecycle ---------- */
+  function newCampaign() {
+    run = {
+      mode: 'campaign', seed: (Math.random() * 4294967295) >>> 0, day: 1, ticket: 0, total: 0, dayScore: 0,
+      strikes: 0, streak: 0, bestStreak: 0, clues: [], inbox: [], notes: {}, phase: 'intro', stats: freshStats(),
+      dayStart: null, accuse: 0, backups: [], order: [], rank: 0
+    };
+    Store.d.stats.runs++;
+    startDay();
+  }
+  function resume() {
+    run = Store.d.campaign;
+    if (!run || run.mode !== 'campaign') return newCampaign();
+    route();
+  }
+  function route() {
+    if (run.phase === 'intro') return dayIntro();
+    if (run.phase === 'ticket') return startTicket();
+    if (run.phase === 'paystub') return payStub();
+    if (run.phase === 'final') return finalScreen();
+    Desktop.show();
+  }
+  function startDay(render = true) {
+    run.ticket = 0; run.strikes = 0; run.dayScore = 0; run.stats = freshStats();
+    run.dayStart = { total: run.total, clues: run.clues.slice(), streak: run.streak, bestStreak: run.bestStreak };
+    let order = U.rng(run.seed + ':order:' + run.day).shuffle(TYPES);
+    if (run.day === 1 && !Store.d.seen.tutorial) order = ['sorter', ...order.filter(t => t !== 'sorter')];
+    run.order = order;
+    run.inbox = [Mail.intro(run.day)];
+    run.phase = 'intro';
+    save();
+    if (render) dayIntro();
+  }
+  function rollbackDay() {
+    const ds = run.dayStart;
+    if (ds) { run.total = ds.total; run.clues = ds.clues.slice(); run.streak = ds.streak; run.bestStreak = ds.bestStreak; }
+    startDay(false);
+  }
+
+  /* ---------- day intro (inbox) ---------- */
+  function dayIntro() {
+    const mail = run.inbox[0]; mail.read = true; save();
+    const clockIn = h('button', { class: 'btn primary wide', text: 'CLOCK IN  >' });
+    clockIn.addEventListener('click', () => {
+      clockIn.disabled = true; Sound.sfx.ok();
+      run.phase = 'ticket'; save(); startTicket();
+    }, { once: true });
+    const body = h('div', {},
+      h('p', { class: 'small muted', text: `Night ${run.day} of 5 · 11:00 PM · Dunmore & Pike Industries, 4th floor IT closet.` }),
+      h('div', { class: 'mail-view' },
+        h('div', { class: 'mail-head' }, 'From: ', h('b', { text: mail.from }), h('br'), 'Subject: ', h('b', { text: mail.subj })),
+        mail.body),
+      h('div', { class: 'statgrid' },
+        h('div', {}, 'RANK', h('b', { text: RANKS[rankIdx(run.total)][0] })),
+        h('div', {}, 'SCORE', h('b', { text: String(run.total) })),
+        h('div', {}, 'EVIDENCE', h('b', { text: run.clues.length + ' / 25' })),
+        h('div', {}, 'TONIGHT', h('b', { text: '5 tickets' }))),
+      h('div', { class: 'row' }, h('button', { class: 'btn grow', onclick: () => CaseFile.open() }, Icons.el('case'), 'CASE.TXT'), clockIn));
+    Screen.set('intro', h('div', { class: 'wrap' }, Win(`INBOX - ${DAYS[run.day - 1]}, OCT ${6 + run.day}, 1996`, body)), () => Taskbar.setClock(null), 'Inbox - Day ' + run.day);
+    Taskbar.setClock(() => 23 * 60);
+    Sound.sfx.mail();
+  }
+
+  /* ---------- tickets ---------- */
+  async function startTicket() {
+    Modal.closeAll();
+    const type = run.order[run.ticket], tier = tierOf();
+    const tutorial = isCamp() && run.day === 1 && run.ticket === 0 && !Store.d.seen.tutorial && type === 'sorter';
+    const myT = T = { type, tier, tutorial, tutorialActive: tutorial, attempt: 0, mistakes: 0, attemptMistakes: 0, hints: 0, struck: false, state: 'loading', token: 0, puzzle: null, timer: null, el: null, lastSec: 999 };
+    await FX.busy(`Loading ${TYPE_INFO[type].exe} ...`, 650);
+    if (T !== myT) return;
+    buildTicketScreen();
+    if (!tutorial && !Store.d.seen['intro_' + type]) {
+      Store.d.seen['intro_' + type] = 1; Store.save();
+      await Modal.open({
+        title: TYPE_INFO[type].name, closeValue: true,
+        body: h('div', { class: 'err-row' }, Icons.el(TYPE_INFO[type].icon), h('div', { class: 'msg', text: TYPE_INFO[type].intro })),
+        buttons: [{ label: 'GOT IT', primary: true, value: true }]
+      });
+      if (T !== myT) return;
+    }
+    buildPuzzle();
+    startTimer();
+    if (tutorial) runTutorial();
+  }
+  function buildTicketScreen() {
+    const info = TYPE_INFO[T.type], myT = T;
+    const timerEl = h('div', { class: 'timer', role: 'timer', 'aria-label': 'Time left', text: U.fmtTime(TIME[T.type][T.tier - 1]) });
+    const scoreEl = h('b'), strikesEl = h('span', { class: 'strikes', 'aria-label': 'Strikes' }), streakEl = h('span');
+    const hintBtn = h('button', { class: 'btn' }, '? HINT ', h('span', { class: 'tiny', text: '-30' }));
+    hintBtn.addEventListener('click', useHint);
+    const mailBadge = h('span', { class: 'badge', style: 'display:none' });
+    const caseBtn = isCamp() ? h('button', { class: 'btn', onclick: () => CaseFile.open() }, Icons.el('case'), 'CASE') : null;
+    const mailBtn = isCamp() ? h('button', { class: 'btn', onclick: () => openInbox() }, Icons.el('mail'), 'MAIL', mailBadge) : null;
+    const label = isCamp() ? `DAY ${run.day} · TICKET ${run.ticket + 1}/5` : `DAILY ${run.date.slice(4, 6)}/${run.date.slice(6)} · ${run.ticket + 1}/5`;
+    const hud = Win(`TICKET #${ticketNo()}`, h('div', { class: 'hud' },
+      h('div', { class: 'meta' }, h('b', { text: label }), h('br'), `${info.name} · TIER ${U.roman(T.tier)}`, h('br'), h('span', { class: 'twist', text: TWISTS[T.type][T.tier - 1] })),
+      timerEl,
+      h('div', { class: 'hud-row' }, h('span', {}, 'SCORE ', scoreEl), h('span', {}, 'STRIKES ', strikesEl), streakEl),
+      h('div', { class: 'hud-actions' }, hintBtn, caseBtn, mailBtn)), { cls: 'plain' });
+    const names = ['Linda', 'Gary', 'Marty', 'Dee', 'Janet', 'Stan'];
+    const rq = U.rng(run.seed + ':req:' + run.day + ':' + run.ticket);
+    const req = h('div', { class: 'reqline', text: rq.pick(REQ[T.type]).replace('{n}', rq.pick(names)) });
+    const body = h('div');
+    const hintbar = h('div', { class: 'hintbar', role: 'status' });
+    const pw = Win(info.exe, h('div', {}, req, body, hintbar), { tight: T.type === 'firewall', onClose: () => leaveTicket() });
+    T.el = { timerEl, scoreEl, strikesEl, streakEl, hintBtn, mailBadge, body, hintbar, pw, wrap: null };
+    const wrap = h('div', { class: 'wrap' }, hud, pw);
+    T.el.wrap = wrap;
+    Screen.set('ticket', wrap, () => teardown(myT), `${info.exe} - ${isCamp() ? 'Day ' + run.day : 'Daily'}`);
+    updateHud();
+  }
+  function teardown(t) {
+    if (!t) return;
+    if (t.timer) t.timer.stop();
+    if (t.puzzle) { try { t.puzzle.destroy(); } catch (e) { /* ignore */ } }
+    t.state = 'done';
+    if (T === t) { Coach.end(true); T = null; }
+    Taskbar.setClock(null);
+  }
+  function buildPuzzle() {
+    const myT = T, token = ++ctxSeq;
+    T.token = token; T.attemptMistakes = 0; T.state = 'active';
+    T.el.body.textContent = '';
+    const alive = () => T === myT && T.token === token && T.state === 'active';
+    const ctx = {
+      rng: U.rng(`${run.seed}:${run.day}:${run.ticket}:${T.attempt}`), tier: T.tier, tutorial: T.tutorial, clue: clueText(T.type),
+      mistake: msg => { if (alive()) mistake(msg); },
+      fail: msg => { if (alive()) failAttempt(msg); },
+      solve: info => { if (alive()) solveTicket(info || {}); },
+      emit: ev => { if (alive()) Coach.event(ev); }
+    };
+    T.ctx = ctx;
+    T.puzzle = Puzzles[T.type](T.el.body, ctx);
+    updateHud();
+  }
+  function startTimer() {
+    const myT = T;
+    T.timer = new Countdown(TIME[T.type][T.tier - 1], (left, paused) => {
+      if (T !== myT || !T.el) return;
+      const el = T.el.timerEl;
+      el.textContent = U.fmtTime(left);
+      el.classList.toggle('low', left <= 20);
+      el.classList.toggle('crit', left <= 10 && !paused);
+      el.classList.toggle('paused', paused);
+      const s = Math.ceil(left);
+      if (s <= 10 && s > 0 && s !== T.lastSec && !paused) Sound.tone(1800, 0.03, { vol: 0.12 });
+      T.lastSec = s;
+    }, () => { if (T === myT) expire(); });
+    if (T.tutorialActive) T.timer.pause();
+    if (document.hidden) { T.visPaused = true; T.timer.pause(); }
+    Taskbar.setClock(() => (T === myT && T.timer) ? 23 * 60 + run.ticket * 55 + Math.floor(T.timer.elapsed) : null);
+  }
+  function runTutorial() {
+    const myT = T, P = T.puzzle;
+    Coach.start([
+      { target: () => myT.el && myT.el.timerEl, text: 'Welcome, temp! Every ticket has a timer. It\'s paused while I show you around.' },
+      { target: () => P.coach.rules(), text: 'Rules decide where each file goes. Read top to bottom: the first rule that matches wins.' },
+      { target: () => P.coach.file(), text: 'Tap a file to pick it up.', wait: 'select' },
+      { target: () => P.coach.folders(), text: 'Now tap the folder its rule points to.', wait: 'placed' },
+      { target: () => myT.el && myT.el.hintBtn, text: 'Stuck? HINT helps but costs points. Sort the rest - the clock starts now!', btn: 'START' }
+    ], () => {
+      Store.d.seen.tutorial = 1; Store.save();
+      if (T === myT && T.tutorialActive) { T.tutorialActive = false; if (T.timer) T.timer.resume(); }
+    });
+  }
+  function updateHud() {
+    if (!T || !T.el) return;
+    T.el.scoreEl.textContent = String(run.total);
+    T.el.strikesEl.textContent = '';
+    for (let i = 0; i < 3; i++) T.el.strikesEl.append(h('i', { class: i < run.strikes ? 'on' : '', text: i < run.strikes ? 'X' : '' }));
+    T.el.streakEl.textContent = run.streak > 1 ? `STREAK x${run.streak}` : '';
+    T.el.hintBtn.disabled = T.hints >= 3;
+    if (T.el.mailBadge && isCamp()) {
+      const n = run.inbox.filter(m => !m.read).length;
+      T.el.mailBadge.textContent = n; T.el.mailBadge.style.display = n ? '' : 'none';
+    }
+  }
+  function mistake(msg) {
+    if (T.tutorialActive) { Sound.sfx.err(); FX.shake(); FX.toast(msg + ' Check the rules - no penalty while training.'); return; }
+    T.mistakes++; T.attemptMistakes++; run.stats.mistakes++;
+    Sound.sfx.err(); FX.shake();
+    if (T.attemptMistakes >= 3) { failAttempt(msg + '\n\nThat\'s 3 errors on this attempt.'); return; }
+    FX.toast(`${msg} (error ${T.attemptMistakes}/3)`, { icon: 'bomb' });
+    updateHud();
+  }
+  function addStrike() {
+    run.strikes++; run.stats.strikes++; run.streak = 0; T.struck = true;
+    updateHud();
+  }
+  function failAttempt(msg) {
+    const myT = T;
+    T.state = 'hold';
+    T.puzzle.destroy();
+    addStrike();
+    if (run.strikes >= 3) return shiftOver(msg);
+    save();
+    Modal.error(`${msg}\n\nSTRIKE ${run.strikes} of 3.\nThe ticket has been reset.`, 'System Error', 'Retry').then(() => {
+      if (T !== myT) return;
+      T.attempt++;
+      buildPuzzle();
+    });
+  }
+  function bumpTicket() {
+    run.ticket++;
+    if (run.ticket >= 5) run.phase = 'paystub';
+  }
+  function expire() {
+    if (!T || T.state !== 'active') return;
+    const myT = T;
+    T.state = 'done';
+    T.puzzle.destroy(); Coach.end(true);
+    addStrike(); run.stats.failed++;
+    FX.stamp(T.el.pw, 'ESCALATED', 'ticket timed out', true);
+    bumpTicket();
+    if (run.strikes >= 3) return shiftOver('Ticket timed out.');
+    save();
+    Modal.error(`TIMEOUT\n\nThe ticket was escalated to the day shift. No evidence recovered.\n\nSTRIKE ${run.strikes} of 3.`, 'Timeout', 'Next  >').then(() => { if (T === myT) advance(); });
+  }
+  function useHint() {
+    if (!T || T.state !== 'active') return;
+    if (T.tutorialActive) { FX.toast('Finish the quick tour first!'); return; }
+    if (T.hints >= 3) { FX.toast('No more hints on this ticket.'); return; }
+    const res = T.puzzle.hint();
+    if (res == null) { FX.toast('No hint available right now.'); return; }
+    const free = typeof res === 'object' && res.free;
+    const text = typeof res === 'string' ? res : res.text;
+    if (!free) {
+      T.hints++; run.stats.hints++; run.stats.hintCost += 30;
+      run.total = Math.max(0, run.total - 30); run.dayScore -= 30;
+    }
+    Sound.sfx.select();
+    T.el.hintbar.textContent = 'TIP: ' + text + (free ? '' : '  (-30 pts)');
+    T.el.hintbar.classList.add('on');
+    updateHud();
+  }
+  function checkRank() {
+    const ri = rankIdx(run.total);
+    if (isCamp() && ri > (run.rank || 0)) {
+      run.rank = ri;
+      setTimeout(() => FX.toast('PROMOTED: ' + RANKS[ri][0].toUpperCase() + '!', { icon: 'trophy', dark: true, ms: 3000 }), 900);
+    }
+    if (ri > Store.d.best.rank) Store.d.best.rank = ri;
+    if (ri >= 2) Ach.wall('bricks');
+    if (ri >= 5) Ach.unlock('root');
+  }
+  function solveTicket(info) {
+    const myT = T;
+    T.state = 'done'; T.timer.stop(); Coach.end(true);
+    const left = Math.max(0, T.timer.left / 1000);
+    const base = 100 * T.tier, speed = Math.round(left) * 2, acc = Math.max(0, 100 - 30 * T.mistakes), nohint = T.hints ? 0 : 75;
+    const total = base + speed + acc + nohint;
+    run.total += total; run.dayScore += total;
+    const st = run.stats;
+    st.closed++; st.base += base; st.speed += speed; st.acc += acc; st.nohint += nohint;
+    if (!T.struck) { run.streak++; run.bestStreak = Math.max(run.bestStreak, run.streak); if (run.streak >= 5) Ach.unlock('streak'); }
+    Store.d.stats.tickets++;
+    Ach.unlock('first');
+    if (T.type === 'terminal' && T.timer.elapsed < 45) Ach.unlock('typist');
+    if (T.type === 'firewall' && T.tier === 3 && T.mistakes === 0) Ach.unlock('ports');
+    if (T.type === 'password' && info.guesses && info.guesses <= 3) Ach.unlock('firstguess');
+    let clue = null;
+    if (isCamp()) {
+      const idx = (run.day - 1) * 5 + run.ticket;
+      clue = clueText(T.type);
+      if (!run.clues.some(c => c.i === idx)) run.clues.push({ i: idx, type: T.type, day: run.day });
+    }
+    checkRank();
+    const solvedIdx = run.ticket;
+    bumpTicket();
+    let newMail = null;
+    if (isCamp() && (solvedIdx === 1 || solvedIdx === 3)) {
+      newMail = Mail.pressure(U.rng(run.seed + ':mail:' + run.day + ':' + solvedIdx));
+      run.inbox.push(newMail);
+    }
+    if (T.tutorial) Store.d.seen.tutorial = 1;
+    save();
+    showResult({ base, speed, acc, nohint, total, clue, hints: T.hints });
+    if (newMail) setTimeout(() => { if (T !== myT) return; Sound.sfx.mail(); updateHud(); FX.toast('You\'ve got mail! Tap to read.', { icon: 'mail', onclick: openInbox, ms: 3500 }); }, 1700);
+  }
+  function showResult(s) {
+    FX.stamp(T.el.pw, 'TICKET CLOSED', '#' + ticketNo() + ' · RESOLVED');
+    const last = run.ticket >= 5;
+    const next = h('button', { class: 'btn primary wide', text: last ? (isCamp() ? 'CLOCK OUT  >' : 'FINISH  >') : 'NEXT TICKET  >' });
+    next.addEventListener('click', () => { next.disabled = true; Sound.sfx.click(); advance(); }, { once: true });
+    const row = (a, b) => h('tr', {}, h('td', { text: a }), h('td', { text: b }));
+    const res = Win('RESULT.TXT', h('div', { class: 'result' },
+      h('table', { class: 'score-table' },
+        row(`Tier ${U.roman(T.tier)} base`, '+' + s.base), row('Speed bonus', '+' + s.speed), row('Accuracy', '+' + s.acc),
+        row('No-hint bonus', s.nohint ? '+' + s.nohint : '-'), s.hints ? row(`Hints used (${s.hints})`, '-' + s.hints * 30) : null,
+        h('tr', { class: 'tot' }, h('td', { text: 'Ticket total' }), h('td', { text: '+' + s.total }))),
+      s.clue ? h('div', { class: 'evidence' }, h('div', { class: 'lbl', text: 'NEW EVIDENCE · filed to CASE.TXT' }), s.clue) : null,
+      h('div', { style: 'margin-top:12px' }, next)));
+    T.el.wrap.append(res);
+    setTimeout(() => res.scrollIntoView({ block: 'nearest', behavior: Settings.reduced() ? 'auto' : 'smooth' }), 450);
+  }
+  function advance() {
+    if (run.ticket >= 5) return isCamp() ? dayEnd() : dailyEnd(false);
+    startTicket();
+  }
+  async function leaveTicket() {
+    const daily = !isCamp();
+    const ok = await Modal.confirm('Leave ticket?', daily
+      ? 'Abandon today\'s challenge run? Your score so far will not be saved.'
+      : 'Go back to the desktop? Your shift is saved - this ticket will restart when you continue.', 'Leave', 'Stay');
+    if (!ok) return;
+    if (daily) run = null;
+    Desktop.show();
+  }
+
+  /* ---------- end of shift / day ---------- */
+  function shiftOver(msg) {
+    if (T) { T.state = 'done'; if (T.timer) T.timer.stop(); }
+    Coach.end(true);
+    Sound.sfx.lose(); FX.shake();
+    const daily = !isCamp();
+    if (daily) recordDaily();
+    else rollbackDay();
+    const retry = h('button', { class: 'btn primary grow', text: daily ? 'TRY AGAIN' : 'RETRY NIGHT ' + run.day });
+    retry.addEventListener('click', () => { retry.disabled = true; daily ? startDaily() : dayIntro(); }, { once: true });
+    const body = h('div', { class: 'wrap' },
+      h('div', { class: 'bsod' },
+        h('div', { class: 'center' }, h('span', { class: 'hl', text: ' NIGHTSHIFT ' })), '\n',
+        'A fatal exception 0E has occurred at 0028:C0011E36 in VXD TEMP(01). The current shift will be terminated.\n\n',
+        `*  Reason: ${String(msg).split('\n')[0]}\n`, '*  Strikes: 3 of 3\n',
+        daily ? '*  Daily score recorded: ' + run.total + '\n' : '*  Tonight\'s progress has been rolled back.\n',
+        '*  Pike has been notified. He is not happy.\n\n', h('span', { class: 'cursor-blink', text: 'Press any key to continue ' })),
+      h('div', { class: 'row' }, h('button', { class: 'btn grow', text: 'DESKTOP', onclick: () => { if (daily) run = null; Desktop.show(); } }), retry));
+    Screen.set('bsod', body, null, 'Fatal exception');
+  }
+  function dayEnd() {
+    run.phase = 'paystub';
+    const st = run.stats;
+    if (st.strikes === 0) Ach.unlock('nocrash');
+    if (st.hints === 0) Ach.unlock('nohint');
+    if (run.day === 1) Ach.wall('weave');
+    if (!run.inbox.some(m => m.outro)) run.inbox.push(Object.assign(Mail.outro(run.day), { outro: true }));
+    save();
+    payStub();
+  }
+  function payStub() {
+    const st = run.stats, ri = rankIdx(run.total);
+    const nextR = RANKS[ri + 1];
+    const pct = nextR ? U.clamp((run.total - RANKS[ri][1]) / (nextR[1] - RANKS[ri][1]), 0, 1) : 1;
+    const row = (a, b) => h('tr', {}, h('td', { text: a }), h('td', { text: b }));
+    const outro = run.inbox.find(m => m.outro) || Mail.outro(run.day);
+    outro.read = true;
+    const last = run.day >= 5;
+    const go = h('button', { class: 'btn primary wide', text: last ? 'OPEN THE CASE: WHO IS NIGHTOWL?' : `CLOCK OUT · NIGHT ${run.day + 1} >` });
+    go.addEventListener('click', () => {
+      go.disabled = true; Sound.sfx.ok();
+      if (last) { run.phase = 'final'; save(); finalScreen(); }
+      else { run.day++; startDay(); }
+    }, { once: true });
+    const body = h('div', { class: 'wrap' },
+      Win('PAYSTUB.TXT', h('div', {},
+        h('div', { class: 'stub' },
+          h('h3', { text: 'DUNMORE & PIKE INDUSTRIES' }),
+          h('div', { class: 'small', text: `Payroll Dept. · Employee: TEMP #0451 · Night of ${DAYS[run.day - 1]}, Oct ${6 + run.day}, 1996` }),
+          h('table', {},
+            row('Tickets closed', `${st.closed} / 5`), row('Base pay', U.money(st.base)), row('Speed bonus', U.money(st.speed)),
+            row('Accuracy bonus', U.money(st.acc)), row('No-hint bonus', U.money(st.nohint)),
+            row('Hint deductions', '-' + U.money(st.hintCost)), row(`Strikes (${st.strikes})`, st.strikes ? 'noted in file' : 'none'),
+            h('tr', { class: 'net' }, h('td', { text: 'NET PAY' }), h('td', { text: U.money(run.dayScore) }))),
+          h('p', { class: 'small', style: 'margin-top:10px' }, 'Year-to-date: ', h('b', { text: U.money(run.total) }), ` (${run.total} pts)`),
+          h('p', { class: 'small', style: 'margin:6px 0 0' }, 'Rank: ', h('b', { text: RANKS[ri][0] }), nextR ? ` · next: ${nextR[0]} at ${nextR[1]} pts` : ' · MAX RANK'),
+          h('div', { class: 'bar' }, h('i', { style: `width:${Math.round(pct * 100)}%` })),
+          h('p', { class: 'tiny muted', style: 'margin:0', text: `Evidence collected: ${run.clues.length} / 25 · Best streak: ${run.bestStreak}` })))),
+      Win('NEW MAIL', h('div', {},
+        h('div', { class: 'mail-view' }, h('div', { class: 'mail-head' }, 'From: ', h('b', { text: outro.from }), h('br'), 'Subject: ', h('b', { text: outro.subj })), outro.body),
+        h('div', { style: 'margin-top:12px' }, go))));
+    Screen.set('paystub', body, () => Taskbar.setClock(null), 'PAYSTUB.TXT');
+    Taskbar.setClock(() => 7 * 60);
+    save();
+  }
+
+  /* ---------- the final deduction ---------- */
+  function finalScreen() {
+    const m = getMystery();
+    run.backups = run.backups || [];
+    const wrap = h('div', { class: 'wrap' });
+    const render = () => {
+      wrap.textContent = '';
+      const clueList = h('ul', { class: 'clues' });
+      run.clues.slice().sort((a, b) => a.i - b.i).forEach(c => clueList.append(h('li', {}, h('small', { text: `Night ${c.day} · ${Case.SRC[c.type]}` }), m.clues[c.i].text)));
+      run.backups.forEach(b => clueList.append(h('li', {}, h('small', { text: 'Backup tape' }), b.text)));
+      if (!clueList.children.length) clueList.append(h('li', { text: 'No evidence recovered. You\'ll have to guess...' }));
+      const backupBtn = h('button', { class: 'btn small', text: `RESTORE BACKUP TAPE (-250 pts) · ${3 - run.backups.length} left` });
+      backupBtn.disabled = run.backups.length >= 3;
+      backupBtn.addEventListener('click', restoreBackup);
+      const cards = h('div', { class: 'suspects' });
+      m.people.forEach((p, i) => {
+        const out = !!run.notes[p.id];
+        const t = h('table', {}, Case.KEYS.map(k => h('tr', {}, h('td', { text: Case.ATTRS[k].label }), h('td', { text: p.a[k] }))),
+          h('tr', {}, h('td', { text: 'Department' }), h('td', { text: p.dept })));
+        const ruleBtn = h('button', { class: 'btn small grow', text: out ? 'UN-RULE' : 'RULE OUT' });
+        ruleBtn.addEventListener('click', () => { Sound.sfx.click(); run.notes[p.id] = !out; save(); render(); });
+        const accBtn = h('button', { class: 'btn small primary grow', text: 'ACCUSE' });
+        accBtn.addEventListener('click', () => accuse(i));
+        cards.append(h('div', { class: 'suspect' + (out ? ' out' : '') },
+          h('div', { class: 'nm', text: p.name }), h('div', { class: 'role', text: `${p.role} · ${p.blurb}` }), t,
+          h('div', { class: 'row' }, ruleBtn, accBtn)));
+      });
+      wrap.append(
+        Win('WHO IS NIGHTOWL?', h('div', {},
+          h('p', { text: 'Five people had keys. Compare each personnel file against your evidence. Every clue is true.' }),
+          h('p', { class: 'small' }, 'Wrong accusations left: ', h('b', { text: String(2 - run.accuse) }), ` · Score: ${run.total}`))),
+        Win(`EVIDENCE (${run.clues.length + run.backups.length})`, h('div', {}, clueList, h('div', { style: 'margin-top:10px' }, backupBtn))),
+        Win('PERSONNEL FILES', cards));
+    };
+    function restoreBackup() {
+      if (run.backups.length >= 3) return;
+      const al = Case.alive(m, run.clues, run.backups).filter(i => i !== m.hacker);
+      if (!al.length) { Modal.alert('Backup tape', 'The tape has nothing new. Your evidence already points to exactly one person.', 'floppy'); return; }
+      const cands = m.facts.filter(f => f.e.some(i => al.includes(i))).sort((a, b) => a.e.filter(i => al.includes(i)).length - b.e.filter(i => al.includes(i)).length);
+      const f = cands[0];
+      run.backups.push({ text: f.texts[0], e: f.e.slice() });
+      run.total = Math.max(0, run.total - 250);
+      save(); Sound.sfx.ok();
+      FX.busy('Restoring BACKUP.TAP ...', 900).then(render);
+    }
+    async function accuse(i) {
+      const p = m.people[i];
+      const ok = await Modal.confirm('Accuse?', `Name ${p.name} as NIGHTOWL?\n\nPike will call security.`, 'ACCUSE', 'Wait', 'owl');
+      if (!ok) return;
+      if (i === m.hacker) return ending(true, i);
+      run.accuse++; run.notes[p.id] = true; save();
+      if (run.accuse >= 2) return ending(false, i);
+      await Modal.error(`${p.name} has an airtight alibi.\n\nPike: "One more wrong name and it's YOUR name on the report."`, 'Wrong suspect', 'Back to the evidence');
+      render();
+    }
+    render();
+    Screen.set('final', wrap, () => Taskbar.setClock(null), 'CASE.TXT - Final');
+    Taskbar.setClock(() => 8 * 60 + 40);
+  }
+  function ending(win, picked) {
+    const m = getMystery(), H = m.people[m.hacker];
+    let bonus = 0;
+    if (win) {
+      bonus = run.accuse === 0 ? 1500 : 750;
+      run.total += bonus;
+      Ach.unlock('caught'); Ach.wall('root');
+      Store.d.stats.wins++;
+    }
+    checkRank();
+    const final = run.total;
+    Store.d.best.campaign = Math.max(Store.d.best.campaign || 0, final);
+    Store.d.campaign = null;
+    Store.save(true);
+    const text = win
+      ? `Security escorted ${H.name} out of the building at 8:52 AM.\n\n${Case.MOTIVE[H.id]}\n\nThe auditors are thrilled. Corporate is thrilled. I am... mildly pleased.\n\nYou're hired. Full time. Days.\n\n- R. Pike`
+      : `You named ${m.people[picked].name}. They were at a bowling league all week.\n\nThe real NIGHTOWL was ${H.name}. ${Case.MOTIVE[H.id]}\n\nThey got away with it. Your badge has been deactivated.\n\n- R. Pike`;
+    const card = Win(win ? 'CASE CLOSED' : 'GAME OVER', h('div', {},
+      h('div', { class: 'mail-view', style: 'position:relative;min-height:120px' },
+        h('div', { class: 'mail-head' }, 'From: ', h('b', { text: Mail.PIKE }), h('br'), 'Subject: ', h('b', { text: win ? 'NIGHTOWL' : 'Your badge' })), text),
+      h('div', { class: 'statgrid' },
+        h('div', {}, 'FINAL SCORE', h('b', { text: String(final) })),
+        h('div', {}, 'RANK', h('b', { text: RANKS[rankIdx(final)][0] })),
+        h('div', {}, win ? 'CATCH BONUS' : 'EVIDENCE', h('b', { text: win ? '+' + bonus : run.clues.length + '/25' })),
+        h('div', {}, 'BEST EVER', h('b', { text: String(Store.d.best.campaign) }))),
+      h('div', { class: 'row' },
+        h('button', { class: 'btn grow', text: 'DESKTOP', onclick: () => Desktop.show() }),
+        h('button', { class: 'btn primary grow', text: 'NEW GAME', onclick: () => { run = null; newCampaign(); } }))));
+    const wrap = h('div', { class: 'wrap' }, card);
+    Screen.set('ending', wrap, null, win ? 'CASE CLOSED' : 'GAME OVER');
+    setTimeout(() => FX.stamp(card.querySelector('.mail-view'), win ? 'CASE CLOSED' : 'UNSOLVED', win ? H.name.toUpperCase() : 'NIGHTOWL ESCAPED', !win), 300);
+    win ? Sound.sfx.win() : Sound.sfx.lose();
+    run = null;
+  }
+
+  /* ---------- daily challenge ---------- */
+  function startDaily() {
+    const ds = U.ymd();
+    run = { mode: 'daily', seed: 'DAILY-' + ds, date: ds, day: 0, ticket: 0, total: 0, dayScore: 0, strikes: 0, streak: 0, bestStreak: 0, stats: freshStats(), order: U.rng('DAILY-' + ds + ':order').shuffle(TYPES), tiers: [2, 2, 3, 3, 3] };
+    startTicket();
+  }
+  function recordDaily() {
+    const d = Store.d.best.daily;
+    d[run.date] = Math.max(d[run.date] || 0, run.total);
+    const keys = Object.keys(d).sort();
+    while (keys.length > 30) delete d[keys.shift()];
+    Store.save();
+  }
+  function dailyEnd() {
+    const prev = Store.d.best.daily[run.date] || 0;
+    recordDaily();
+    Ach.unlock('daily');
+    const st = run.stats;
+    const body = h('div', { class: 'wrap' }, Win('DAILY.EXE - RESULTS', h('div', {},
+      h('div', { class: 'logo' }, h('div', { class: 'big', text: String(run.total) }), h('div', { class: 'sub', text: `Daily challenge · ${run.date.slice(0, 4)}-${run.date.slice(4, 6)}-${run.date.slice(6)}` })),
+      h('div', { class: 'statgrid' },
+        h('div', {}, 'CLOSED', h('b', { text: st.closed + ' / 5' })), h('div', {}, 'STRIKES', h('b', { text: String(st.strikes) })),
+        h('div', {}, 'HINTS', h('b', { text: String(st.hints) })), h('div', {}, 'TODAY\'S BEST', h('b', { text: String(Math.max(prev, run.total)) }))),
+      h('p', { class: 'small center', text: run.total > prev ? 'New personal best for today!' : 'Same puzzles for everyone today. Come back tomorrow for a new set.' }),
+      h('div', { class: 'row' }, h('button', { class: 'btn grow', text: 'DESKTOP', onclick: () => Desktop.show() }), h('button', { class: 'btn primary grow', text: 'PLAY AGAIN', onclick: startDaily })))));
+    Screen.set('daily-end', body, null, 'DAILY.EXE');
+    Sound.sfx.win();
+    run = null;
+  }
+
+  /* ---------- inbox ---------- */
+  function inboxAvailable() { return isCamp() && ['ticket', 'intro'].includes(Screen.name); }
+  function openInbox() {
+    if (!isCamp()) return;
+    const list = h('div', { class: 'mail-list' });
+    const view = h('div');
+    const draw = () => {
+      list.textContent = '';
+      run.inbox.slice().reverse().forEach(m => {
+        const b = h('button', { class: 'mail-item' + (m.read ? '' : ' unread') }, Icons.el('mail'), h('div', {}, h('div', { class: 'from', text: m.from }), h('div', { class: 'subj', text: m.subj })));
+        b.addEventListener('click', () => {
+          m.read = true; save(); Sound.sfx.open(); updateHud(); draw();
+          view.textContent = '';
+          view.append(h('div', { class: 'mail-view', style: 'margin-top:10px' }, h('div', { class: 'mail-head' }, 'From: ', h('b', { text: m.from }), h('br'), 'Subject: ', h('b', { text: m.subj })), m.body));
+        });
+        list.append(b);
+      });
+    };
+    draw();
+    Modal.open({ title: 'INBOX', body: h('div', {}, list, view), buttons: [{ label: 'Close', primary: true }] });
+  }
+
+  // Pause timers for "pausing" modals and when the app is backgrounded.
+  Modal.onPause(d => { if (T && T.timer && T.state !== 'done') d > 0 ? T.timer.pause() : T.timer.resume(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) Store.flush();
+    if (!T || !T.timer) return;
+    if (document.hidden && !T.visPaused) { T.visPaused = true; T.timer.pause(); }
+    else if (!document.hidden && T.visPaused) { T.visPaused = false; T.timer.resume(); }
+  });
+
+  return {
+    newCampaign, resume, startDaily, leaveTicket, openInbox, inboxAvailable,
+    get run() { return run; }, get ticket() { return T; }, getMystery, rankIdx, clearRun: () => { run = null; },
+    hasCampaign: () => !!Store.d.campaign, isTicketActive: () => !!T && T.state !== 'done'
+  };
+})();
+
+/* ============================== Case file viewer ============================== */
+const CaseFile = (() => {
+  function open() {
+    const camp = Store.d.campaign;
+    if (!camp) { Modal.alert('CASE.TXT', 'No active case. Start a night shift first.', 'case'); return; }
+    const m = Case.build(camp.seed);
+    const pane = h('div', { class: 'tabpane' });
+    const tabP = h('button', { class: 'on', text: 'PERSONNEL' });
+    const tabE = h('button', { text: `EVIDENCE (${camp.clues.length})` });
+    const showP = () => {
+      tabP.classList.add('on'); tabE.classList.remove('on'); pane.textContent = '';
+      const grid = h('div', { class: 'suspects' });
+      m.people.forEach(p => grid.append(h('div', { class: 'suspect' + (camp.notes && camp.notes[p.id] ? ' out' : '') },
+        h('div', { class: 'nm', text: p.name }), h('div', { class: 'role', text: p.role + ' · ' + p.blurb }),
+        h('table', {}, Case.KEYS.map(k => h('tr', {}, h('td', { text: Case.ATTRS[k].label }), h('td', { text: p.a[k] }))),
+          h('tr', {}, h('td', { text: 'Department' }), h('td', { text: p.dept }))))));
+      pane.append(grid);
+    };
+    const showE = () => {
+      tabE.classList.add('on'); tabP.classList.remove('on'); pane.textContent = '';
+      if (!camp.clues.length) { pane.append(h('p', { class: 'small', text: 'No evidence yet. Every ticket you close recovers one clue about NIGHTOWL.' })); return; }
+      const ul = h('ul', { class: 'clues' });
+      camp.clues.slice().sort((a, b) => a.i - b.i).forEach(c => ul.append(h('li', {}, h('small', { text: `Night ${c.day} · ${Case.SRC[c.type]}` }), m.clues[c.i].text)));
+      pane.append(ul);
+    };
+    tabP.addEventListener('click', () => { Sound.sfx.click(); showP(); });
+    tabE.addEventListener('click', () => { Sound.sfx.click(); showE(); });
+    showE();
+    Modal.open({ title: 'CASE.TXT - NIGHTOWL', body: h('div', {}, h('div', { class: 'tabs' }, tabE, tabP), pane), buttons: [{ label: 'Close', primary: true }] });
+  }
+  return { open };
+})();
+
+/* ============================== Desktop (main menu) ============================== */
+const Desktop = (() => {
+  function show() {
+    Modal.closeAll(); Taskbar.closeMenu();
+    if (Game.run && Game.run.mode === 'daily') Game.clearRun();
+    Taskbar.setClock(null);
+    const camp = Store.d.campaign;
+    const best = Store.d.best;
+    const today = best.daily[U.ymd()] || 0;
+    const startBtn = h('button', { class: 'btn primary wide' }, Icons.el('owl'), camp ? `CONTINUE · NIGHT ${camp.day}${camp.phase === 'ticket' ? ', TICKET ' + (camp.ticket + 1) : ''}` : 'START NIGHT SHIFT');
+    startBtn.addEventListener('click', () => { Sound.sfx.ok(); camp ? Game.resume() : Game.newCampaign(); });
+    const newBtn = camp ? h('button', { class: 'btn grow', text: 'NEW GAME' }) : null;
+    if (newBtn) newBtn.addEventListener('click', async () => {
+      const ok = await Modal.confirm('New game?', `Start over? Your current shift (Night ${camp.day}, ${camp.total} pts) will be lost.`, 'Start over', 'Cancel', 'bomb');
+      if (ok) { Store.d.campaign = null; Store.save(); Game.newCampaign(); }
+    });
+    const dailyBtn = h('button', { class: 'btn grow' }, Icons.el('calendar'), 'DAILY CHALLENGE');
+    dailyBtn.addEventListener('click', () => { Sound.sfx.ok(); Game.startDaily(); });
+    const icon = (ic, label, fn, badge) => {
+      const b = h('button', { class: 'dicon', 'aria-label': label }, h('span', { class: 'ico', style: 'width:42px;height:42px;background:none;border:0;padding:0', html: Icons.svg(ic) }), h('span', { text: label }), badge ? h('i', { class: 'badge', text: badge }) : null);
+      b.addEventListener('click', () => { Sound.sfx.click(); fn(); });
+      return b;
+    };
+    const achCount = Object.keys(Store.d.ach).length;
+    const wrap = h('div', { class: 'wrap' },
+      Win('NIGHTSHIFT.EXE', h('div', {},
+        h('div', { class: 'logo' }, h('div', { class: 'big' }, 'NIGHT', h('br'), h('em', { text: 'SHIFT.EXE' })), h('div', { class: 'sub', text: 'Dunmore & Pike Industries · IT Dept · 1996' })),
+        h('div', { class: 'statgrid' },
+          h('div', {}, 'BEST RANK', h('b', { text: RANKS[best.rank || 0][0] })),
+          h('div', {}, 'BEST SCORE', h('b', { text: String(best.campaign || 0) })),
+          h('div', {}, 'TICKETS CLOSED', h('b', { text: String(Store.d.stats.tickets) })),
+          h('div', {}, 'DAILY (TODAY)', h('b', { text: today ? String(today) : '-' }))),
+        h('div', { class: 'row', style: 'flex-direction:column' }, startBtn, h('div', { class: 'row' }, dailyBtn, newBtn)),
+        Store.isPersistent() ? null : h('p', { class: 'tiny muted', style: 'margin-top:8px', text: 'Note: storage is unavailable (private mode?) - progress lasts this session only.' }))),
+      h('div', { class: 'desk-icons' },
+        icon('owl', 'NIGHTSHIFT', () => startBtn.click()),
+        icon('calendar', 'DAILY.EXE', () => dailyBtn.click()),
+        camp ? icon('case', 'CASE.TXT', () => CaseFile.open(), camp.clues.length || null) : null,
+        icon('trophy', 'AWARDS', awards, achCount ? achCount + '' : null),
+        icon('gear', 'CONTROL PANEL', control),
+        icon('book', 'HELP.TXT', manual),
+        icon('computer', 'MY COMPUTER', myComputer),
+        icon('trash', 'RECYCLE BIN', recycle)));
+    Screen.set('desktop', wrap, null, 'Program Manager');
+  }
+  function awards() {
+    const list = h('div', { class: 'ach-list' });
+    Ach.LIST.forEach(a => {
+      const got = Ach.has(a.id);
+      list.append(h('div', { class: 'ach' + (got ? '' : ' locked') }, Icons.el('trophy'),
+        h('div', {}, h('b', { text: got || !a.hidden ? a.name : '???' }), h('div', { class: 'd', text: got || !a.hidden ? a.desc : 'Hidden. Keep poking around.' }))));
+    });
+    Modal.open({ title: `AWARDS (${Object.keys(Store.d.ach).length}/${Ach.LIST.length})`, body: list, buttons: [{ label: 'Close', primary: true }] });
+  }
+  function control() {
+    const s = Settings.get();
+    const body = h('div');
+    const draw = () => {
+      body.textContent = '';
+      const tog = (label, key, invert) => {
+        const on = invert ? s[key] === false : !!s[key];
+        const b = h('button', { class: 'btn small', 'aria-pressed': String(on) }, h('span', { class: 'check', text: on ? 'X' : '' }), label);
+        b.addEventListener('click', () => { Settings.set(key, invert ? (s[key] === false) : !s[key]); Sound.sfx.click(); draw(); });
+        return h('div', { class: 'toggle-row' }, h('span', { text: label }), b);
+      };
+      body.append(
+        h('div', { class: 'toggle-row' }, h('span', { text: 'Sound' }),
+          h('button', { class: 'btn small', 'aria-pressed': String(!s.mute), onclick: () => { Settings.set('mute', !s.mute); if (!s.mute) Sound.sfx.ok(); draw(); } }, h('span', { class: 'check', text: s.mute ? '' : 'X' }), s.mute ? 'Off' : 'On')),
+        tog('Reduce motion', 'reduce'),
+        tog('Disable CRT scanlines', 'crt', true),
+        h('h4', { style: 'margin:14px 0 6px', text: 'Wallpaper' }));
+      const grid = h('div', { class: 'wp-grid' });
+      Ach.WALLS.forEach(w => {
+        const have = Store.d.walls.includes(w.id);
+        const b = h('button', { class: 'btn wp-opt' + (s.wallpaper === w.id ? ' on' : '') + (have ? '' : ' lock'), 'aria-label': w.name + (have ? '' : ' (locked)') },
+          h('span', { class: 'sw wp-' + w.id }), h('span', { text: have ? w.name : 'LOCKED: ' + w.how }));
+        b.addEventListener('click', () => {
+          if (!have) { Sound.sfx.err(); FX.toast('Locked. ' + (w.how === '???' ? 'Some codes never die...' : 'Unlock: ' + w.how)); return; }
+          Settings.set('wallpaper', w.id); Sound.sfx.select(); draw();
+        });
+        grid.append(b);
+      });
+      const reset = h('button', { class: 'btn small', text: 'ERASE ALL SAVED DATA...' });
+      reset.addEventListener('click', async () => {
+        const ok = await Modal.confirm('Format C:?', 'Erase all progress, scores, awards and settings? This cannot be undone.', 'Erase', 'Cancel', 'bomb');
+        if (!ok) return;
+        Store.reset(); Settings.apply(); Game.clearRun(); Modal.closeAll(); show(); FX.toast('C: formatted. All data erased.');
+      });
+      body.append(grid, h('div', { style: 'margin-top:14px' }, reset));
+    };
+    draw();
+    Modal.open({ title: 'CONTROL PANEL', body, buttons: [{ label: 'Done', primary: true }] });
+  }
+  function manual() {
+    Ach.unlock('manual');
+    const sec = (t, items) => [h('h4', { text: t }), h('ul', {}, items.map(i => h('li', { text: i })))];
+    Modal.open({
+      title: 'HELP.TXT', body: h('div', { class: 'manual' },
+        h('p', { class: 'small', text: 'Five tickets a night, five nights. Each closed ticket recovers evidence about the hacker NIGHTOWL. On Friday, name them.' }),
+        sec('SCORING', ['Tier base + speed bonus + accuracy + no-hint bonus.', 'Hints cost 30 pts (max 3 per ticket).', '3 errors on one attempt = a strike. 3 strikes = shift over.', 'Running out of time = strike, no evidence.']),
+        sec('CRACK.EXE', ['Enter digits, press ENTER.', 'Tier I: per-digit feedback. Tier II+: black peg = right spot, white peg = right digit, wrong spot.', 'Tap the sticky note, calendar and photo for clues. Old notes lie.']),
+        sec('SORT.EXE', ['Tap a file, then tap a folder.', 'Check rules top to bottom. First match wins.']),
+        sec('MODEM.EXE', ['Watch + listen, then repeat the tones.', 'Works muted - follow the lights. Tier III: enter in reverse.']),
+        sec('COMMAND.COM', ['DIR, DIR /A, CD <dir>, CD .., OPEN <file>, DECRYPT <file> <key>.', 'Keys you read are copied to the clipboard chips.']),
+        sec('FIREWALL.EXE', ['Numbers = trapped neighbors. First probe is always safe.', 'Long-press or FLAG mode to flag. Tap a satisfied number to clear around it.', 'Tier II counts only up/down/left/right. Tier III has heavy (x2) traps.']),
+        sec('RANKS', [RANKS.map(r => `${r[0]} ${r[1]}`).join(' · ')])),
+      buttons: [{ label: 'Close', primary: true }]
+    });
+  }
+  function myComputer() {
+    const st = Store.d.stats;
+    Modal.alert('MY COMPUTER',
+      `Dunmore & Pike PC-486 DX2/66\n640K conventional memory\n8 MB extended (Pike says that's plenty)\nC: 340 MB · 2% free\nModem: 28.8 kbps\n\nShifts started: ${st.runs}\nTickets closed: ${st.tickets}\nNIGHTOWLs caught: ${st.wins}\nAwards: ${Object.keys(Store.d.ach).length} / ${Ach.LIST.length}\nSave storage: ${Store.isPersistent() ? 'OK' : 'UNAVAILABLE'}`, 'computer');
+  }
+  function recycle() {
+    const item = (ic, name, fn) => {
+      const b = h('button', { class: 'mail-item' }, Icons.el(ic), h('div', {}, h('div', { class: 'subj', text: name })));
+      b.addEventListener('click', () => { Sound.sfx.open(); fn(); });
+      return b;
+    };
+    Modal.open({
+      title: 'RECYCLE BIN', body: h('div', {},
+        h('p', { class: 'small muted', text: '3 items. Deleted by R. Pike, 10/02/96.' }),
+        h('div', { class: 'mail-list' },
+          item('cards', 'SOL.EXE', () => { Modal.closeAll(); Eggs.solitaire(); }),
+          item('file', 'PHIL_RESUME.DOC', () => Modal.alert('PHIL_RESUME.DOC', 'OBJECTIVE: Leave Dunmore & Pike.\n\nSKILLS: Minesweeper (Expert, 141s). Telling people to restart it.\n\nREFERENCES: Not R. Pike.', 'file')),
+          item('file', 'PASSWORDS.TXT', () => Modal.alert('PASSWORDS.TXT', 'hunter2\npassword1\npassword2 (new!)\n\n(nice try)', 'lock')))),
+      buttons: [{ label: 'Close', primary: true }]
+    });
+  }
+  function shutdown() {
+    Modal.closeAll();
+    if (Game.isTicketActive()) Game.clearRun();
+    const s = h('div', { id: 'boot', style: 'display:flex;align-items:center;justify-content:center;text-align:center;color:var(--amber);font-size:20px', role: 'button', tabindex: '0' },
+      'It\'s now safe to turn off\nyour computer.\n\n', h('span', { class: 'tiny', style: 'color:var(--beige-d)', text: '(tap to reboot)' }));
+    s.addEventListener('click', () => { s.remove(); Boot.run(); });
+    Taskbar.closeMenu();
+    Screen.set('off', h('div'), null, 'Shut down');
+    document.body.append(s);
+  }
+  return { show, awards, control, manual, recycle, shutdown };
+})();
+
+/* ============================== Eggs ============================== */
+const Eggs = (() => {
+  /* ---- Screensaver: after 45s idle on the desktop ---- */
+  let last = Date.now(), saver = null, raf = 0;
+  ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev => window.addEventListener(ev, () => { last = Date.now(); }, { passive: true }));
+  setInterval(() => {
+    if (saver || document.hidden) return;
+    if (Screen.name === 'desktop' && !Modal.isOpen() && !$('#startmenu') && Date.now() - last > 45000) startSaver();
+  }, 3000);
+  function startSaver() {
+    saver = h('div', { id: 'saver', role: 'button', 'aria-label': 'Screensaver. Tap to wake.' });
+    document.body.append(saver);
+    const stop = () => {
+      if (!saver) return;
+      cancelAnimationFrame(raf); saver.remove(); saver = null; last = Date.now();
+      Ach.unlock('saver');
+    };
+    setTimeout(() => saver && saver.addEventListener('pointerdown', stop), 300);
+    window.addEventListener('keydown', stop, { once: true });
+    if (Settings.reduced()) {
+      saver.append(h('div', { class: 'static', html: 'NIGHT SHIFT.EXE<br><small style="color:#A89B7C">tap to wake</small>' }));
+      return;
+    }
+    const cv = h('canvas'); saver.append(cv);
+    const c = cv.getContext('2d');
+    let W = 0, H = 0;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const fit = () => { W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    fit(); window.addEventListener('resize', fit);
+    const stars = Array.from({ length: 90 }, () => ({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, z: Math.random() }));
+    const logo = { x: 40, y: 80, vx: 1.4, vy: 1.1, w: 0, h: 34, amber: true };
+    c.font = 'bold 22px monospace';
+    logo.w = c.measureText('NIGHT SHIFT.EXE').width + 20;
+    const frame = () => {
+      if (!saver) { window.removeEventListener('resize', fit); return; }
+      c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
+      stars.forEach(s => {
+        s.z -= 0.006; if (s.z <= 0.02) { s.x = Math.random() * 2 - 1; s.y = Math.random() * 2 - 1; s.z = 1; }
+        const px = W / 2 + (s.x / s.z) * W * 0.3, py = H / 2 + (s.y / s.z) * H * 0.3;
+        const sz = (1 - s.z) * 3.2;
+        c.fillStyle = '#EDE6D3'; c.fillRect(px | 0, py | 0, Math.max(1, sz), Math.max(1, sz));
+      });
+      logo.x += logo.vx; logo.y += logo.vy;
+      if (logo.x < 0 || logo.x + logo.w > W) { logo.vx *= -1; logo.amber = !logo.amber; logo.x = U.clamp(logo.x, 0, W - logo.w); }
+      if (logo.y < 0 || logo.y + logo.h > H) { logo.vy *= -1; logo.amber = !logo.amber; logo.y = U.clamp(logo.y, 0, H - logo.h); }
+      c.fillStyle = logo.amber ? '#E39B2D' : '#EDE6D3'; c.fillRect(logo.x, logo.y, logo.w, logo.h);
+      c.fillStyle = '#1B1915'; c.font = 'bold 22px monospace'; c.textBaseline = 'middle';
+      c.fillText('NIGHT SHIFT.EXE', logo.x + 10, logo.y + logo.h / 2 + 1);
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ---- Konami: arrows+B+A on keyboard, or swipe U U D D L R L R on touch ---- */
+  const CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  const SWIPE = ['U', 'U', 'D', 'D', 'L', 'R', 'L', 'R'];
+  let kpos = 0, swipes = [], tStart = null;
+  window.addEventListener('keydown', e => {
+    if (e.target && e.target.tagName === 'INPUT') return;
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    kpos = k === CODE[kpos] ? kpos + 1 : (k === CODE[0] ? 1 : 0);
+    if (kpos === CODE.length) { kpos = 0; konami(); }
+  });
+  window.addEventListener('touchstart', e => { if (e.touches.length === 1) tStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() }; }, { passive: true });
+  window.addEventListener('touchend', e => {
+    if (!tStart || Screen.name !== 'desktop') return;
+    const t = e.changedTouches[0], dx = t.clientX - tStart.x, dy = t.clientY - tStart.y;
+    const fast = Date.now() - tStart.t < 600; tStart = null;
+    if (!fast || Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+    const dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U');
+    swipes.push(dir); swipes = swipes.slice(-8);
+    if (swipes.join() === SWIPE.join()) { swipes = []; konami(); }
+  }, { passive: true });
+  function konami() {
+    Sound.sfx.win();
+    const fresh = Ach.unlock('konami');
+    Ach.wall('circuit');
+    FX.toast(fresh ? '+30 LIVES! (Not really. But enjoy the wallpaper.)' : 'Still +30 lives. Still not really.', { icon: 'owl', dark: true, ms: 3200 });
+    if (Settings.get().wallpaper !== 'circuit') Settings.set('wallpaper', 'circuit');
+  }
+  /* ---- Tap the taskbar clock 7 times: a little 1996 ---- */
+  let taps = 0, tapT = 0;
+  function clockTap() {
+    taps++; clearTimeout(tapT); tapT = setTimeout(() => { taps = 0; }, 1500);
+    if (taps >= 7) { taps = 0; Sound.sfx.boot(); FX.toast('Y2K READY? Ask again in 3 years.', { icon: 'hourglass', ms: 2600 }); }
+  }
+
+  /* ---- Solitaire cameo: Golf solitaire, with the famous bouncing-card finish ---- */
+  function solitaire() {
+    const SUITS = ['♠', '♥', '♦', '♣'];
+    const RK = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const r = U.rng(Date.now());
+    let cols, stock, waste, over = false;
+    function deal() {
+      const deck = [];
+      for (let s = 0; s < 4; s++) for (let v = 0; v < 13; v++) deck.push({ s, v });
+      const d = r.shuffle(deck);
+      cols = Array.from({ length: 7 }, (_, i) => d.slice(i * 5, i * 5 + 5));
+      stock = d.slice(35); waste = [stock.pop()]; over = false;
+    }
+    const body = h('div');
+    const cardEl = (c, can) => {
+      const red = c.s === 1 || c.s === 2;
+      return h('div', { class: 'card' + (red ? ' red' : '') + (can ? ' can' : '') }, RK[c.v], h('span', { class: 's', text: SUITS[c.s] }), h('span', { class: 'big', text: SUITS[c.s] }));
+    };
+    const fits = c => Math.abs(c.v - waste[waste.length - 1].v) === 1;
+    function draw() {
+      body.textContent = '';
+      const top = waste[waste.length - 1];
+      const stockBtn = h('button', { class: 'btn', style: 'flex-direction:column;min-width:70px', 'aria-label': 'Draw a card' }, h('div', { class: 'card back', style: 'width:46px' }), `${stock.length} left`);
+      stockBtn.addEventListener('click', () => {
+        if (!stock.length || over) return;
+        waste.push(stock.pop()); Sound.sfx.key(); draw();
+      });
+      const remaining = cols.reduce((s, c) => s + c.length, 0);
+      body.append(h('div', { class: 'sol-top' }, stockBtn, h('div', { style: 'width:52px' }, cardEl(top, false)), h('div', { class: 'small', text: `Play cards one higher or lower than the waste card. ${remaining} on table.` })));
+      const table = h('div', { class: 'sol-table' });
+      cols.forEach((col, ci) => {
+        const ce = h('div', { class: 'sol-col' });
+        if (!col.length) ce.append(h('div', { class: 'card empty' }));
+        col.forEach((c, k) => {
+          const isTop = k === col.length - 1;
+          const el = cardEl(c, isTop && fits(c) && !over);
+          if (isTop) {
+            el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0');
+            el.addEventListener('click', () => {
+              if (over) return;
+              if (!fits(c)) { Sound.sfx.err(); return; }
+              waste.push(col.pop()); Sound.sfx.select(); check(); draw();
+            });
+          }
+          ce.append(el);
+        });
+        table.append(ce);
+      });
+      body.append(table);
+      if (over) body.append(h('p', { class: 'center', style: 'margin-top:10px', text: over === 'win' ? 'YOU WIN! Don\'t tell Pike.' : 'No more moves. Deal again?' }));
+    }
+    function check() {
+      if (cols.every(c => !c.length)) { over = 'win'; Ach.unlock('sol'); Sound.sfx.win(); setTimeout(bounce, 300); return; }
+      if (!stock.length && !cols.some(c => c.length && fits(c[c.length - 1]))) over = 'lose';
+    }
+    deal(); draw();
+    Modal.open({ title: 'SOL.EXE', body, buttons: [{ label: 'Deal', onClick: () => { deal(); draw(); Sound.sfx.key(); return false; } }, { label: 'Close', primary: true }] });
+  }
+  /** The legendary win cascade: cards bounce and leave trails. Tap to stop. */
+  function bounce() {
+    if (Settings.reduced()) return;
+    const cv = h('canvas', { id: 'fxcanvas' });
+    document.body.append(cv);
+    const dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    let cards = [], n = 0, raf2 = 0, alive = true;
+    const end = () => { alive = false; cancelAnimationFrame(raf2); cv.remove(); };
+    cv.addEventListener('pointerdown', end);
+    setTimeout(end, 9000);
+    const SU = ['♠', '♥', '♦', '♣'];
+    const step = () => {
+      if (!alive) return;
+      if (n < 52 && (n === 0 || cards[cards.length - 1].age > 22)) {
+        cards.push({ x: W - 60 - (n % 4) * 12, y: 30, vx: -(2 + Math.random() * 4), vy: -Math.random() * 3, s: n % 4, age: 0 }); n++;
+      }
+      cards.forEach(k => {
+        k.age++; k.vy += 0.45; k.x += k.vx; k.y += k.vy;
+        if (k.y > H - 70) { k.y = H - 70; k.vy *= -0.82; }
+        c.fillStyle = '#FBF7EC'; c.strokeStyle = '#1B1915'; c.lineWidth = 2;
+        c.fillRect(k.x, k.y, 46, 64); c.strokeRect(k.x, k.y, 46, 64);
+        c.fillStyle = k.s === 1 || k.s === 2 ? '#B06A12' : '#1B1915'; c.font = 'bold 22px monospace';
+        c.fillText(SU[k.s], k.x + 13, k.y + 40);
+      });
+      cards = cards.filter(k => k.x > -60);
+      if (n >= 52 && !cards.length) return end();
+      raf2 = requestAnimationFrame(step);
+    };
+    raf2 = requestAnimationFrame(step);
+  }
+  return { solitaire, clockTap };
+})();
+
+/* ============================== Boot ============================== */
+const Boot = (() => {
+  function run() {
+    const lines = [
+      ['DUNMORE & PIKE BIOS v1.96  (C) 1996', 'amber'], 'CPU: 486 DX2/66   Memory Test: 640K OK', 'Extended Memory: 8192K OK', '',
+      'Detecting IDE drives ... C: 340MB', 'Modem: Hayes-compatible 28.8k on COM2', '',
+      'Loading DPOS 6.22 ...', 'HIMEM.SYS loaded', 'Starting NIGHTSHIFT.EXE ...', ''
+    ];
+    const el = h('div', { id: 'boot', role: 'status' });
+    const skip = h('div', { class: 'skip', text: 'tap to skip' });
+    el.append(skip);
+    document.body.append(el);
+    let i = 0, done = false, t = 0;
+    const finish = () => {
+      if (done) return; done = true; clearTimeout(t);
+      el.remove(); Desktop.show();
+    };
+    el.addEventListener('click', finish);
+    const fast = Settings.reduced();
+    const next = () => {
+      if (done) return;
+      if (i >= lines.length) { t = setTimeout(finish, fast ? 100 : 350); return; }
+      const ln = lines[i++];
+      el.insertBefore(h('div', { class: Array.isArray(ln) ? ln[1] : '', text: (Array.isArray(ln) ? ln[0] : ln) || ' ' }), skip);
+      t = setTimeout(next, fast ? 20 : 110);
+    };
+    next();
+  }
+  return { run };
+})();
+
+/* ============================== Install / init ============================== */
+(function init() {
+  // Block pinch-zoom / double-tap zoom / pull-to-refresh beyond what CSS already does.
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  document.addEventListener('touchstart', () => {}, { passive: true }); // enables :active on iOS
+  document.addEventListener('contextmenu', e => { if (!(e.target.closest && e.target.closest('input'))) e.preventDefault(); });
+
+  // Home-screen icon generated from the pixel owl (no external assets).
+  try {
+    const cv = document.createElement('canvas'); cv.width = cv.height = 180;
+    const c = cv.getContext('2d');
+    c.fillStyle = '#1B1915'; c.fillRect(0, 0, 180, 180);
+    const map = Icons.MAPS.owl;
+    map.forEach((row, y) => { for (let x = 0; x < 16; x++) { const col = Icons.PAL[row[x]]; if (col) { c.fillStyle = col; c.fillRect(10 + x * 10, 6 + y * 10, 10, 10); } } });
+    const url = cv.toDataURL('image/png');
+    document.head.append(h('link', { rel: 'apple-touch-icon', href: url }));
+    if (/^https?:$/.test(location.protocol)) {
+      const manifest = {
+        name: 'NIGHT SHIFT.EXE', short_name: 'Night Shift', display: 'standalone', orientation: 'portrait',
+        background_color: '#1B1915', theme_color: '#1B1915', start_url: location.href.split('#')[0], scope: location.origin + '/',
+        icons: [{ src: url, sizes: '180x180', type: 'image/png' }]
+      };
+      const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+      document.head.append(h('link', { rel: 'manifest', href: URL.createObjectURL(blob) }));
+    }
+  } catch (e) { /* icon generation is optional */ }
+
+  window.addEventListener('pagehide', () => Store.flush());
+  Settings.apply();
+  Taskbar.init();
+  Boot.run();
+})();
+</script>
+</body>
+</html>
