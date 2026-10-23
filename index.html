@@ -384,19 +384,21 @@ body.no-crt #crt,body.no-crt #vignette{display:none}
 .fw-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .fw-count{font-size:13px;background:var(--ink);color:var(--amber);padding:4px 8px}
 .fw-grid{display:grid;gap:2px;background:var(--ink);border:2px solid var(--ink);margin:0 -4px;touch-action:manipulation}
-.cell{aspect-ratio:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:17px;padding:0;border:0;position:relative;
-  background:var(--beige);box-shadow:inset 2px 2px 0 var(--paper),inset -2px -2px 0 var(--beige-d);cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.cell.open{background:var(--cream);box-shadow:none;cursor:default}
+.cell{aspect-ratio:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;padding:0;border:0;position:relative;
+  background:var(--beige-d);box-shadow:inset 3px 3px 0 var(--beige),inset -3px -3px 0 var(--mid);cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.cell:active{box-shadow:inset 3px 3px 0 var(--mid)}
+.cell.open{background:var(--paper);box-shadow:none;cursor:default;color:var(--ink)}
+.cell.open.n0::after{content:"";width:4px;height:4px;background:var(--beige-d)}
 .cell.trap{background:var(--amber);box-shadow:none}
 .cell.trap::before{content:"";width:46%;height:46%;background:var(--ink);border-radius:50%;box-shadow:0 0 0 2px var(--amber),0 0 0 4px var(--ink)}
-.cell.trap.heavy::after{content:"2";position:absolute;right:2px;bottom:0;font-size:10px}
+.cell.trap.heavy::after{content:"2";position:absolute;right:2px;bottom:0;font-size:10px;width:auto;height:auto;background:none}
 .cell.flag::before{content:"";position:absolute;left:34%;top:20%;width:3px;height:60%;background:var(--ink)}
 .cell.flag::after{content:"";position:absolute;left:calc(34% + 3px);top:20%;border-left:13px solid var(--amber);border-top:6px solid transparent;border-bottom:6px solid transparent;filter:drop-shadow(1px 0 0 var(--ink))}
 .cell.flag2 .f2{position:absolute;right:3px;bottom:1px;font-size:10px}
 .cell.hintme{animation:flashBg .45s steps(1) 4}
-.cell.n0{color:transparent}
-.cell.n2,.cell.n3{text-decoration:underline}
-.cell.n4,.cell.n5,.cell.n6,.cell.n7,.cell.n8{background:var(--paper);text-decoration:underline double}
+.fw-legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;margin-top:10px;font-size:12px}
+.fw-legend span{display:inline-flex;align-items:center;gap:6px}
+.fw-legend .cell{width:24px;height:24px;font-size:13px;flex:none;cursor:default}
 .mode-btn.on{background:var(--ink);color:var(--amber)}
 
 /* ---------- Solitaire cameo ---------- */
@@ -1746,7 +1748,12 @@ Puzzles.firewall = function (root, ctx) {
     cells.push(b); grid.append(b);
   }
   root.append(h('div', { class: 'fw-bar' }, countEl, modeBtn), grid,
-    h('p', { class: 'tiny muted center', style: 'margin:8px 0 0', text: 'Long-press (or FLAG mode) to flag a trap. Tap an open number to clear around it.' + (C.heavy ? ' Tap a flag again for a HEAVY (x2) flag.' : '') }));
+    h('div', { class: 'fw-legend', 'aria-hidden': 'true' },
+      h('span', {}, h('i', { class: 'cell' }), 'not opened yet'),
+      h('span', {}, h('i', { class: 'cell open n0' }), 'safe, no traps touching'),
+      h('span', {}, h('i', { class: 'cell open', text: '2' }), C.plus ? '2 traps up/down/left/right' : '2 traps touching it'),
+      h('span', {}, h('i', { class: 'cell flag' }), 'your flag')),
+    h('p', { class: 'tiny muted center', style: 'margin:8px 0 0', text: 'Tap a raised square to open it. Long-press (or FLAG mode) to mark a trap.' + (C.heavy ? ' Heavy traps count as 2: tap a flag again for a x2 flag.' : '') }));
 
   function paint(i) {
     const b = cells[i];
